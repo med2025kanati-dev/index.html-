@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
-:root{--bg:#eef3f1;--ink:#14302b;--mut:#4c6560;--pri:#1f5c54;--card:#fff;--line:#c5d6d1;--res:#8a5a12;--resbg:#fbf1dc;--done:#2a7a4b;--donebg:#dff1e6;--bad:#a33a2a}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1c1a;--ink:#e6f0ed;--mut:#9db5af;--pri:#5fb3a6;--card:#162926;--line:#2c4540;--res:#e3b768;--resbg:#2e2614;--done:#6fd196;--donebg:#17301f;--bad:#f08a78}}
+:root{--bg:#eef3f1;--ink:#14302b;--mut:#4c6560;--pri:#1f5c54;--pri2:#174640;--card:#fff;--line:#c5d6d1;--res:#8a5a12;--resbg:#fbf1dc;--done:#2a7a4b;--donebg:#dff1e6;--bad:#a33a2a}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1c1a;--ink:#e6f0ed;--mut:#9db5af;--pri:#5fb3a6;--pri2:#7cc8bb;--card:#162926;--line:#2c4540;--res:#e3b768;--resbg:#2e2614;--done:#6fd196;--donebg:#17301f;--bad:#f08a78}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 19px/1.8 'Noto Naskh Arabic',serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 main{max-width:620px;margin:0 auto;padding:20px 16px 60px}
@@ -25,6 +25,7 @@ input:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--pri);ou
 .btn.red{background:transparent;color:var(--bad);border:2px solid var(--bad)}
 .btn.wa{background:#1d8348}
 .btn:disabled{opacity:.5}
+.row{display:flex;gap:10px}.row .btn{margin-top:10px}
 .hero{display:grid;place-items:center;margin:8px 0}
 .ring{position:relative;width:210px;height:210px}.ring svg{width:100%;height:100%}
 .ring .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
@@ -49,7 +50,7 @@ details{color:var(--mut);margin-top:26px;font-size:.95rem}summary{cursor:pointer
 <body><main id="app"></main>
 <dialog id="dlg"></dialog>
 <script>
-const SUPABASE_URL='https://YOUR-PROJECT.supabase.co', SUPABASE_KEY='YOUR-ANON-KEY';
+const SUPABASE_URL='https://knwdlmboealgjyomaqtb.supabase.co', SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtud2RsbWJvZWFsZ2p5b21hcXRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxODExNDYsImV4cCI6MjEwNzc1NzE0Nn0.68rccaY3gTQXWs9AKZD_yUzKQWo_-EoSsCulmTKPLkY';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=s=>document.querySelector(s), app=$('#app'), dlg=$('#dlg');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -81,7 +82,7 @@ function home(){
    mine.unshift({slug:r.slug,t:r.admin_token,title:$('#d').value.trim()||'ختمة '+name});localStorage.mine=JSON.stringify(mine.slice(0,20));
    created(r)}catch(x){$('#m').textContent='تعذّر الإنشاء، تحقق من الاتصال وأعد المحاولة.';b.disabled=false}}}
 function created(r){
- const pub=`${base()}#/k/${r.slug}`;
+ const pub=`${base()}#/k/${r.slug}`, adm=`${base()}#/a/${r.slug}/${r.admin_token}`;
  const wa='https://wa.me/?text='+encodeURIComponent('تفضلوا بالمشاركة في ختمة القرآن الكريم، احجز جزءًا واقرأه:\n'+pub);
  app.innerHTML=`<h1>تم إنشاء الختمة</h1><div class="card"><h2>رابط المشاركين</h2><div class="link">${esc(pub)}</div>
  <a class="btn wa" href="${wa}" target="_blank" rel="noopener">مشاركة عبر واتساب</a><button class="btn alt" onclick="navigator.clipboard.writeText('${pub}');this.textContent='تم النسخ'">نسخ الرابط</button></div>
