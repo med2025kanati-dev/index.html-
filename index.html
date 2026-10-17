@@ -1,222 +1,160 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ختمة القرآن الكريم</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-:root{--bg:#eef3f1;--ink:#14302b;--mut:#4c6560;--pri:#1f5c54;--pri2:#174640;--card:#fff;--line:#c5d6d1;--res:#8a5a12;--resbg:#fbf1dc;--done:#2a7a4b;--donebg:#dff1e6;--bad:#a33a2a}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1c1a;--ink:#e6f0ed;--mut:#9db5af;--pri:#5fb3a6;--pri2:#7cc8bb;--card:#162926;--line:#2c4540;--res:#e3b768;--resbg:#2e2614;--done:#6fd196;--donebg:#17301f;--bad:#f08a78}}
+:root{--bg:#f2f5fa;--ink:#11213a;--mut:#56657d;--pri:#1d3f77;--card:#fff;--line:#d3dbe8;--gold:#b07a1c;--goldbg:#fdf1d8;--ok:#23704a;--okbg:#ddf2e5;--bad:#a53a2b}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1626;--ink:#e8eefb;--mut:#9fb0cc;--pri:#8db4f5;--card:#16213a;--line:#2a3a5c;--gold:#e8b85c;--goldbg:#2e2512;--ok:#6fd196;--okbg:#17301f;--bad:#f09080}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 19px/1.8 'Noto Naskh Arabic',serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-main{max-width:620px;margin:0 auto;padding:20px 16px 60px}
-h1,h2{font-family:Amiri,serif;font-weight:700;margin:.2em 0}
-h1{font-size:2.1rem;text-align:center}h2{font-size:1.5rem}
-.sub{text-align:center;color:var(--mut);margin:0 0 18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 19px/1.8 'Noto Naskh Arabic',serif}
+.top{background:var(--pri);color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top)) 12px 14px;font:700 1.5rem Amiri,serif}
+.top a{color:#fff;text-decoration:none}
+main{max-width:620px;margin:0 auto;padding:16px 14px 60px}
+h2{font:700 1.4rem Amiri,serif;margin:.2em 0 .4em}
+.c{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:14px 0}
+.mut{color:var(--mut);font-size:.95rem}.ctr{text-align:center}
 label{display:block;font-weight:600;margin:12px 0 4px}
-input[type=text],input[type=password]{width:100%;font:inherit;font-size:1.1rem;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
-input:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
-.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400}.chk input{width:24px;height:24px;margin-top:6px}
-.btn{display:block;width:100%;min-height:56px;font:600 1.15rem 'Noto Naskh Arabic',serif;border:0;border-radius:14px;background:var(--pri);color:#fff;padding:12px;margin:10px 0 0;cursor:pointer;text-align:center;text-decoration:none}
-.btn.alt{background:transparent;color:var(--pri);border:2px solid var(--pri)}
-.btn.red{background:transparent;color:var(--bad);border:2px solid var(--bad)}
-.btn.wa{background:#1d8348}
-.btn:disabled{opacity:.5}
-#rd{position:fixed;inset:0;background:var(--bg);z-index:50;display:none;flex-direction:column;padding-top:env(safe-area-inset-top)}
-.rb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--line)}.rb .btn{width:auto;min-height:44px;margin:0;padding:4px 16px;font-size:1rem}
-.tabs{display:flex;gap:6px;margin-inline-start:auto}.tab{font-weight:600;font-size:1rem;font-family:inherit;min-height:44px;padding:0 14px;border-radius:12px;border:2px solid var(--pri);background:transparent;color:var(--pri)}.tab.on{background:var(--pri);color:#fff}
-.rbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 6px 40px}.pg{display:block;width:100%;max-width:900px;margin:0 auto 8px;background:#fff;border-radius:6px}
-select{width:100%;font:inherit;font-size:1.1rem;padding:13px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:2px solid var(--line);border-radius:10px;padding:0 8px;font-size:.85rem;direction:ltr}.chip.ok{border-color:var(--done);background:var(--donebg)}
-.row2{display:flex;gap:10px}.row2 .btn{flex:1}
-.row{display:flex;gap:10px}.row .btn{margin-top:10px}
-.hero{display:grid;place-items:center;margin:8px 0}
-.ring{position:relative;width:210px;height:210px}.ring svg{width:100%;height:100%}
-.ring .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
-.ring b{font:700 2.8rem/1 Amiri,serif}.ring span{color:var(--mut);font-size:.95rem}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
-.stats div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 4px}.stats b{display:block;font-size:1.5rem}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.j{min-height:92px;border-radius:14px;border:2px solid var(--pri);background:var(--card);color:var(--ink);font:inherit;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;line-height:1.35}
-.j b{font:700 1.6rem Amiri,serif}.j small{font-size:.85rem;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.j.reserved,.j.reading{border-color:var(--res);background:var(--resbg);cursor:default}
-.j.completed{border-color:var(--done);background:var(--donebg);cursor:default}
-.j.mine{box-shadow:0 0 0 4px var(--pri)}
-.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;color:var(--mut);font-size:.95rem;margin:10px 0}
-.dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-inline-end:5px}
+input[type=text],input[type=password],input[type=email]{width:100%;font:inherit;font-size:1.1rem;padding:13px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.b{display:block;width:100%;min-height:56px;font:600 1.15rem 'Noto Naskh Arabic',serif;border:0;border-radius:14px;background:var(--pri);color:#fff;padding:10px;margin:10px 0 0;cursor:pointer;text-align:center;text-decoration:none}
+.b.o{background:transparent;color:var(--pri);border:2px solid var(--pri)}.b.r{background:transparent;color:var(--bad);border:2px solid var(--bad)}.b.g{background:#1d8348}
+.b:disabled{opacity:.5}
+.sm{display:inline-block;min-height:44px;padding:6px 16px;font:600 1rem 'Noto Naskh Arabic',serif;border-radius:12px;border:2px solid var(--pri);color:var(--pri);background:transparent;cursor:pointer}.sm.r{border-color:var(--bad);color:var(--bad)}
+.seg{display:grid;grid-template-columns:repeat(30,1fr);gap:2px;height:16px;margin:10px 0}.seg i{background:var(--line);border-radius:3px}.seg i.r{background:var(--gold)}.seg i.d{background:var(--ok)}
+.st{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.st div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px}.st b{display:block;font-size:1.6rem;line-height:1.3}
+.g30{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.t{min-height:90px;border-radius:16px;border:2px solid var(--pri);background:var(--card);color:var(--ink);font:inherit;padding:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.3;cursor:pointer}
+.t b{font:700 1.7rem Amiri,serif}.t small{font-size:.85rem;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t.r{border-color:var(--gold);background:var(--goldbg);cursor:default}.t.d{border-color:var(--ok);background:var(--okbg);cursor:default}.t.me{box-shadow:0 0 0 4px var(--pri)}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:10px 0;flex-wrap:wrap}
+.tag{font-size:.9rem;padding:0 10px;border-radius:20px;background:var(--goldbg);color:var(--gold)}.tag.ok{background:var(--okbg);color:var(--ok)}
+.msg{color:var(--bad);min-height:1.5em}
+.lnk{direction:ltr;text-align:left;font:500 .9rem monospace;word-break:break-all;background:var(--bg);padding:10px;border-radius:10px}
 dialog{border:0;border-radius:18px;padding:20px;width:min(92vw,440px);background:var(--card);color:var(--ink)}dialog::backdrop{background:#0008}
-.msg{color:var(--bad);min-height:1.6em}
-.link{direction:ltr;text-align:left;font:500 .9rem monospace;word-break:break-all;background:var(--bg);padding:10px;border-radius:10px;margin:6px 0}
-details{color:var(--mut);margin-top:26px;font-size:.95rem}summary{cursor:pointer;font-weight:600}
-.ar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:10px 0;gap:10px}.ar .btn{width:auto;min-height:44px;margin:0;padding:6px 16px;font-size:1rem}
-</style>
-</head>
-<body><main id="app"></main>
-<dialog id="dlg"></dialog>
-<div id="rd"></div>
+details{margin-top:24px}summary{cursor:pointer;font-weight:600}
+#rd{position:fixed;inset:0;background:var(--bg);z-index:50;display:none;flex-direction:column;padding-top:env(safe-area-inset-top)}
+.rb{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--card)}.rb b{flex:1;text-align:center}
+.rbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 6px 40px}.pg{display:block;width:100%;max-width:900px;margin:0 auto 8px;background:#fff;border-radius:6px}
+</style></head>
+<body><div class="top"><a href="#/">ختمة القرآن الكريم</a></div><main id="app"></main><dialog id="dlg"></dialog><div id="rd"></div>
 <script>
-const SUPABASE_URL='https://knwdlmboealgjyomaqtb.supabase.co', SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtud2RsbWJvZWFsZ2p5b21hcXRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxODExNDYsImV4cCI6MjEwNzc1NzE0Nn0.68rccaY3gTQXWs9AKZD_yUzKQWo_-EoSsCulmTKPLkY';
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const owner=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storageKey:'sb-owner'}});
-const MUSHAF=SUPABASE_URL+'/storage/v1/object/public/mushaf/';
-const $=s=>document.querySelector(s), app=$('#app'), dlg=$('#dlg');
+const U='https://knwdlmboealgjyomaqtb.supabase.co',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtud2RsbWJvZWFsZ2p5b21hcXRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxODExNDYsImV4cCI6MjEwNzc1NzE0Nn0.68rccaY3gTQXWs9AKZD_yUzKQWo_-EoSsCulmTKPLkY';
+const db=supabase.createClient(U,K),ow=supabase.createClient(U,K,{auth:{storageKey:'sb-owner'}});
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const $=s=>document.querySelector(s),app=$('#app'),dlg=$('#dlg'),rd=$('#rd');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const TOK=localStorage.tok||(localStorage.tok=crypto.randomUUID()+crypto.randomUUID());
-const ST={reserved:'محجوز',reading:'يقرأ الآن',completed:'مكتمل'};
-let timer;
-async function rpc(f,a){const{data,error}=await db.rpc(f,a);if(error)throw error;return data}
+const ST={reserved:'محجوز',reading:'يقرأ الآن',completed:'مكتمل'},N=n=>String(n).padStart(2,'0');
+const FILE=n=>U+'/storage/v1/object/public/mushaf/juz'+N(n)+'.pdf';
 const base=()=>location.origin+location.pathname;
-const privacy=`<details><summary>سياسة الخصوصية</summary><p>لا نطلب حسابًا ولا بريدًا ولا رقم هاتف. نحفظ فقط الاسم الذي تكتبه، وأسماء الأجزاء المحجوزة، ورمزًا عشوائيًا في متصفحك لتتحكم في حجزك. تُظهَر أسماء المشاركين للجميع فقط إذا فعّل منشئ الختمة ذلك، وإلا يراها المنشئ وحده، ويرى كل مشارك اسمه فقط. لا نبيع البيانات ولا نستخدم إعلانات. يمكنك طلب حذف الختمة من منشئها. إهداء الثواب وفق اعتقاد كل مشارك.</p></details>`;
+const rpc=async(f,a)=>{const{data,error}=await db.rpc(f,a);if(error)throw error;return data};
+const files=async()=>{try{const{data}=await db.storage.from('mushaf').list('',{limit:100});return new Set((data||[]).map(f=>f.name))}catch(e){return new Set()}};
+const mine=()=>JSON.parse(localStorage.mine||'[]');
+const PRIV=`<details><summary>سياسة الخصوصية</summary><p class="mut">لا نطلب حسابًا ولا بريدًا ولا هاتفًا. نحفظ الاسم الذي تكتبه والجزء الذي تحجزه، ورمزًا عشوائيًا في متصفحك لتتحكم في حجزك. تظهر الأسماء للجميع فقط إذا فعّل المنشئ ذلك، وإلا يراها المنشئ وحده وترى اسمك أنت. لا نبيع البيانات ولا نعرض إعلانات. الثواب يُهدى وفق اعتقاد كل مشارك.</p></details>`;
+let timer;
 function route(){clearInterval(timer);const h=location.hash.split('/');
- if(h[1]==='upload')return uploadPage();
- if(h[1]==='k')return khatma(h[2],false);
- if(h[1]==='a')return khatma(h[2],true,h[3]);
- home()}
+ if(h[1]==='k')return khatma(h[2]);if(h[1]==='a')return khatma(h[2],h[3]);if(h[1]==='owner')return owner();home()}
 addEventListener('hashchange',route);
 
 function home(){
- app.innerHTML=`<h1>ختمة القرآن الكريم</h1><p class="sub">اجمعوا الأجزاء الثلاثين بين الأهل والأصدقاء، كلٌّ يقرأ جزءًا</p>
- <form class="card" id="f"><h2>ابدأ ختمة جديدة</h2>
- <label for="d">اسم المتوفى (اختياري)</label><input id="d" type="text" maxlength="80" placeholder="رحمه الله">
- <label for="c">اسمك</label><input id="c" type="text" maxlength="60" required value="${esc(localStorage.name||'')}">
- <label class="chk"><input id="s" type="checkbox" checked><span>إظهار أسماء المشاركين لجميع من لديه الرابط</span></label>
- <p class="msg" id="m"></p><button class="btn">أنشئ الختمة</button></form>
- <div id="mine"></div>${privacy}`;
- const mine=JSON.parse(localStorage.mine||'[]');
- if(mine.length)$('#mine').innerHTML=`<div class="card"><h2>ختماتك</h2>${mine.map(m=>`<a class="btn alt" href="#/a/${m.slug}/${m.t}">${esc(m.title)}</a>`).join('')}</div>`;
- $('#f').onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;
-  try{const name=$('#c').value.trim();localStorage.name=name;
-   const r=await rpc('create_khatma',{p_deceased:$('#d').value,p_creator:name,p_show_names:$('#s').checked});
-   mine.unshift({slug:r.slug,t:r.admin_token,title:$('#d').value.trim()||'ختمة '+name});localStorage.mine=JSON.stringify(mine.slice(0,20));
-   created(r)}catch(x){$('#m').textContent='تعذّر الإنشاء، تحقق من الاتصال وأعد المحاولة.';b.disabled=false}}}
-function created(r){
- const pub=`${base()}#/k/${r.slug}`, adm=`${base()}#/a/${r.slug}/${r.admin_token}`;
- const wa='https://wa.me/?text='+encodeURIComponent('تفضلوا بالمشاركة في ختمة القرآن الكريم، احجز جزءًا واقرأه:\n'+pub);
- app.innerHTML=`<h1>تم إنشاء الختمة</h1><div class="card"><h2>رابط المشاركين</h2><div class="link">${esc(pub)}</div>
- <a class="btn wa" href="${wa}" target="_blank" rel="noopener">مشاركة عبر واتساب</a><button class="btn alt" onclick="navigator.clipboard.writeText('${pub}');this.textContent='تم النسخ'">نسخ الرابط</button></div>
- <div class="card"><h2>رابط الإدارة (سرّي)</h2><p>احتفظ به ولا ترسله لأحد. به تتابع المشاركين وتلغي الحجوزات. حُفظ في هذا المتصفح أيضًا.</p><a class="btn" href="#/a/${r.slug}/${r.admin_token}">افتح صفحة الإدارة</a></div>`}
+ const m=mine();
+ app.innerHTML=`<p class="ctr mut">اجمعوا الأجزاء الثلاثين، كل قارئ يحجز جزءًا ويقرؤه</p>
+ <form class="c" id="f"><h2>ختمة جديدة</h2>
+ <label for="d">اسم المتوفى (اختياري)</label><input id="d" type="text" maxlength="80">
+ <label for="n">اسمك</label><input id="n" type="text" maxlength="60" required value="${esc(localStorage.name||'')}">
+ <label style="display:flex;gap:10px;font-weight:400"><input id="s" type="checkbox" checked style="width:24px;height:24px;margin-top:6px"><span>إظهار أسماء المشاركين للجميع</span></label>
+ <p class="msg" id="m"></p><button class="b">أنشئ الختمة</button></form>
+ ${m.length?`<div class="c"><h2>ختماتي</h2>${m.map(x=>`<a class="b o" href="#/a/${x.s}/${x.t}">${esc(x.title)}</a>`).join('')}</div>`:''}
+ ${PRIV}<p class="ctr mut"><a href="#/owner">دخول المالك</a></p>`;
+ $('#f').onsubmit=async e=>{e.preventDefault();const bt=e.submitter;bt.disabled=true;
+  try{const nm=$('#n').value.trim();localStorage.name=nm;
+   const r=await rpc('create_khatma',{p_deceased:$('#d').value,p_creator:nm,p_show_names:$('#s').checked});
+   const l=mine();l.unshift({s:r.slug,t:r.admin_token,title:$('#d').value.trim()||'ختمة '+nm});localStorage.mine=JSON.stringify(l.slice(0,20));
+   location.hash='#/a/'+r.slug+'/'+r.admin_token}
+  catch(x){$('#m').textContent='تعذّر الإنشاء، أعد المحاولة.';bt.disabled=false}}}
 
-async function khatma(slug,admin,at){
- const load=async()=>{try{const k=await rpc('get_khatma',{p_slug:slug,p_token:TOK,p_admin:admin?at:null});
-   if(!k){app.innerHTML='<h1>الرابط غير صحيح</h1><a class="btn" href="#/">العودة</a>';return}
-   if(admin&&!k.is_admin){app.innerHTML='<h1>رمز الإدارة غير صحيح</h1>';return}
-   draw(k)}catch(e){const m=$('#err');if(m)m.textContent='انقطع الاتصال، سنعيد المحاولة'}};
+async function khatma(slug,adm){
+ const load=async()=>{try{const k=await rpc('get_khatma',{p_slug:slug,p_token:TOK,p_admin:adm||null});
+  if(!k){app.innerHTML='<p class="ctr">الرابط غير صحيح</p><a class="b" href="#/">الرئيسية</a>';return}
+  if(adm&&!k.is_admin){app.innerHTML='<p class="ctr">رمز الإدارة غير صحيح</p>';return}
+  draw(k)}catch(e){const m=$('#err');if(m)m.textContent='انقطع الاتصال، سنعيد المحاولة'}};
  const draw=k=>{
   const by={};k.claims.forEach(c=>by[c.juz]=c);
-  const done=k.claims.filter(c=>c.status==='completed').length, held=k.claims.length-done, free=30-k.claims.length, pct=Math.round(done/30*100);
-  const C=2*Math.PI*88,seg=C/30;
-  const ring=[...Array(30)].map((_,i)=>{const s=by[i+1]?.status;const col=s==='completed'?'var(--done)':s?'var(--res)':'var(--line)';
-   return `<circle cx="100" cy="100" r="88" fill="none" stroke="${col}" stroke-width="14" stroke-dasharray="${seg-4} ${C-seg+4}" transform="rotate(${i*12-90} 100 100)"/>`}).join('');
-  const title=k.deceased_name?`ختمة عن روح ${esc(k.deceased_name)}`:'ختمة القرآن الكريم';
-  const mine=k.claims.filter(c=>c.mine);
-  app.innerHTML=`<h1>${title}</h1><p class="sub">منشئ الختمة: ${esc(k.creator_name)}${k.deceased_name?'<br>اللهم اغفر له وارحمه':''}</p>
-  ${admin?'<div class="card"><b>صفحة الإدارة</b> · لا تشارك هذا الرابط. رابط المشاركين: <div class="link">'+esc(base()+'#/k/'+slug)+'</div><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent('تفضلوا بالمشاركة في ختمة القرآن الكريم:\n'+base()+'#/k/'+slug)+'">مشاركة عبر واتساب</a><a class="btn alt" href="#/upload">رفع ملفات المصحف (لمالك الموقع)</a></div>':''}
-  <div class="hero"><div class="ring"><svg viewBox="0 0 200 200">${ring}</svg><div class="c"><b>${pct}%</b><span>تم ${done} من 30 جزءًا</span></div></div></div>
-  <div class="stats"><div><b>${free}</b>متاح</div><div><b>${held}</b>محجوز</div><div><b>${done}</b>مكتمل</div></div>
-  ${done===30?'<div class="card" style="text-align:center"><h2>تمّت الختمة</h2><p>تقبّل الله من الجميع</p></div>':''}
-  <p class="msg" id="err"></p>
-  ${mine.length&&!admin?`<div class="card"><h2>أجزاؤك</h2>${mine.map(c=>`<div><b>الجزء ${c.juz}</b> · ${ST[c.status]}
-   <button class="btn" data-r="${c.juz}">مواصلة القراءة</button>
-   ${c.status==='reserved'?`<button class="btn" data-a="reading" data-j="${c.juz}">بدأت القراءة</button>`:''}
-   ${c.status!=='completed'?`<button class="btn" data-a="completed" data-j="${c.juz}">أكملت القراءة</button><button class="btn red" data-a="release" data-j="${c.juz}">إلغاء الحجز</button>`:''}</div>`).join('<hr>')}</div>`:''}
-  <h2>${admin?'الحجوزات':'اختر جزءًا'}</h2>
-  <div class="legend"><span><i class="dot" style="background:var(--card);border:2px solid var(--pri)"></i>متاح</span><span><i class="dot" style="background:var(--res)"></i>محجوز</span><span><i class="dot" style="background:var(--done)"></i>مكتمل</span></div>
-  ${admin?`<div class="card">${k.claims.map(c=>`<div class="ar"><span><b>الجزء ${c.juz}</b> · ${esc(c.name)} · ${ST[c.status]}</span><button class="btn red" data-a="arelease" data-j="${c.juz}">إلغاء</button></div>`).join('')||'<p>لا توجد حجوزات بعد.</p>'}</div>`
-  :`<div class="grid">${[...Array(30)].map((_,i)=>{const c=by[i+1],s=c?.status||'free';
-    return `<button class="j ${s} ${c?.mine?'mine':''}" data-j="${i+1}" ${s==='free'?'':'disabled'} aria-label="الجزء ${i+1} ${s==='free'?'متاح':ST[s]}"><b>${i+1}</b><small>${s==='free'?'متاح':esc(c.name||ST[s])}</small>${s!=='free'&&c.name?`<small>${ST[s]}</small>`:''}</button>`}).join('')}</div>`}
-  <p class="sub" style="margin-top:22px">المصحف: برواية ورش عن نافع، مصحف المدينة النبوية (مجمع الملك فهد لطباعة المصحف الشريف)، بحسب بيانات الملف المستخدم. صفحة الحدّ بين الحزبين تتكرر في الملفين عمدًا.</p>
-  ${privacy}`;
-  app.querySelectorAll('.j.free').forEach(b=>b.onclick=()=>pick(+b.dataset.j));
-  app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>act(b.dataset.a,+b.dataset.j));
-  app.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>openReader(+b.dataset.r))};
- const act=async(a,j)=>{if(a==='release'&&!confirm('إلغاء حجز هذا الجزء؟'))return;if(a==='arelease'&&!confirm('إلغاء هذا الحجز؟'))return;
+  const done=k.claims.filter(c=>c.status==='completed').length,held=k.claims.length-done,free=30-k.claims.length;
+  const pub=base()+'#/k/'+slug,wa='https://wa.me/?text='+encodeURIComponent('تفضلوا بالمشاركة في ختمة القرآن الكريم، احجز جزءًا واقرأه:\n'+pub);
+  const my=k.claims.filter(c=>c.mine);
+  app.innerHTML=`<h2 class="ctr">${k.deceased_name?'ختمة عن روح '+esc(k.deceased_name):'ختمة القرآن الكريم'}</h2>
+  <p class="ctr mut">المنشئ: ${esc(k.creator_name)}${k.deceased_name?' · اللهم اغفر له وارحمه':''}</p>
+  ${adm?`<div class="c"><b>صفحة الإدارة</b><p class="mut">شارك رابط القراء فقط، ولا تشارك رابط الإدارة هذا.</p><div class="lnk">${esc(pub)}</div><a class="b g" target="_blank" rel="noopener" href="${wa}">مشاركة عبر واتساب</a><button class="b o" id="cp">نسخ رابط القراء</button></div>`:''}
+  <div class="c"><div class="seg">${[...Array(30)].map((_,i)=>`<i class="${by[i+1]?.status==='completed'?'d':by[i+1]?'r':''}"></i>`).join('')}</div>
+  <p class="ctr" style="margin:0">اكتمل ${done} من 30 · ${Math.round(done/30*100)}%</p></div>
+  <div class="st"><div><b>${free}</b>متاح</div><div><b>${held}</b>محجوز</div><div><b>${done}</b>مكتمل</div></div>
+  ${done===30?'<div class="c ctr"><h2>تمّت الختمة، تقبّل الله من الجميع</h2></div>':''}
+  <p class="msg ctr" id="err"></p>
+  ${!adm&&my.length?`<div class="c"><h2>أجزائي</h2>${my.map(c=>`<div class="row" style="display:block"><b>الجزء ${c.juz}</b> <span class="tag ${c.status==='completed'?'ok':''}">${ST[c.status]}</span>
+   <button class="b" data-a="read" data-j="${c.juz}">اقرأ الآن</button>
+   ${c.status==='reserved'?`<button class="b o" data-a="reading" data-j="${c.juz}">بدأت القراءة</button>`:''}
+   ${c.status!=='completed'?`<button class="b o" data-a="completed" data-j="${c.juz}">أكملت القراءة</button><button class="b r" data-a="release" data-j="${c.juz}">إلغاء الحجز</button>`:''}</div>`).join('')}</div>`:''}
+  ${adm?`<div class="c"><h2>الحجوزات</h2>${k.claims.map(c=>`<div class="row"><span><b>الجزء ${c.juz}</b> · ${esc(c.name)} · ${ST[c.status]}</span><span>${c.status!=='completed'?`<button class="sm" data-a="adone" data-j="${c.juz}">أكمل</button> `:''}<button class="sm r" data-a="arel" data-j="${c.juz}">إلغاء</button></span></div>`).join('')||'<p class="mut">لا توجد حجوزات بعد.</p>'}</div>
+  <button class="b r" data-a="adel">حذف الختمة نهائيًا</button>`
+  :`<h2>اختر جزءًا</h2><div class="g30">${[...Array(30)].map((_,i)=>{const c=by[i+1],s=c?c.status==='completed'?'d':'r':'';
+   return `<button class="t ${s} ${c?.mine?'me':''}" data-a="pick" data-j="${i+1}" ${c?'disabled':''}><b>${i+1}</b><small>${c?esc(c.name||ST[c.status]):'متاح'}</small></button>`}).join('')}</div>`}
+  ${PRIV}`;
+  const cp=$('#cp');if(cp)cp.onclick=()=>{navigator.clipboard.writeText(pub);cp.textContent='تم النسخ'};
+  app.onclick=e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,+b.dataset.j)}};
+ const act=async(a,j)=>{
+  if(a==='pick')return pick(j);if(a==='read')return view(j);
+  if(a==='release'&&!confirm('إلغاء حجز هذا الجزء؟'))return;if(a==='arel'&&!confirm('إلغاء هذا الحجز؟'))return;
+  if(a==='adel'){if(!confirm('سيُحذف كل شيء في هذه الختمة. متأكد؟'))return;await rpc('admin_delete',{p_slug:slug,p_admin:adm});localStorage.mine=JSON.stringify(mine().filter(x=>x.s!==slug));location.hash='#/';return}
   try{if(a==='release')await rpc('release_juz',{p_slug:slug,p_juz:j,p_token:TOK});
-   else if(a==='arelease')await rpc('admin_release',{p_slug:slug,p_juz:j,p_admin:at});
-   else await rpc('set_status',{p_slug:slug,p_juz:j,p_token:TOK,p_status:a});}catch(e){}
+   else if(a==='arel')await rpc('admin_release',{p_slug:slug,p_juz:j,p_admin:adm});
+   else if(a==='adone')await rpc('admin_set_status',{p_slug:slug,p_juz:j,p_admin:adm,p_status:'completed'});
+   else await rpc('set_status',{p_slug:slug,p_juz:j,p_token:TOK,p_status:a})}catch(e){}
   load()};
- const pick=j=>{dlg.innerHTML=`<h2>حجز الجزء ${j}</h2><label for="n">اسمك</label><input id="n" type="text" maxlength="60" value="${esc(localStorage.name||'')}"><p class="msg" id="dm"></p>
-  <button class="btn" id="ok">احجز الجزء ${j}</button><button class="btn alt" id="no">إلغاء</button>`;dlg.showModal();
+ const pick=j=>{dlg.innerHTML=`<h2>حجز الجزء ${j}</h2><label for="pn">اسمك</label><input id="pn" type="text" maxlength="60" value="${esc(localStorage.name||'')}"><p class="msg" id="dm"></p><button class="b" id="ok">احجز الجزء ${j}</button><button class="b o" id="no">إلغاء</button>`;dlg.showModal();
   $('#no').onclick=()=>dlg.close();
-  $('#ok').onclick=async()=>{const n=$('#n').value.trim();if(!n){$('#dm').textContent='اكتب اسمك أولًا';return}
+  $('#ok').onclick=async()=>{const n=$('#pn').value.trim();if(!n){$('#dm').textContent='اكتب اسمك أولًا';return}
    $('#ok').disabled=true;localStorage.name=n;
    try{const r=await rpc('claim_juz',{p_slug:slug,p_juz:j,p_name:n,p_token:TOK});
     if(r==='ok'){dlg.close();load();return}
     $('#dm').textContent=r==='taken'?'سبقك أحدهم إلى هذا الجزء، اختر جزءًا آخر.':r==='limit'?'يمكنك حجز 3 أجزاء نشطة كحد أقصى.':'تعذّر الحجز.';
-    if(r==='taken'){setTimeout(()=>{dlg.close();load()},1800)}else $('#ok').disabled=false}
+    if(r==='taken')setTimeout(()=>{dlg.close();load()},1800);else $('#ok').disabled=false}
    catch(e){$('#dm').textContent='تعذّر الاتصال، أعد المحاولة.';$('#ok').disabled=false}}};
- await load();timer=setInterval(()=>{if(!dlg.open&&$('#rd').style.display!=='flex')load()},5000)}
-const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
-if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+'pdf.worker.min.js';
-let FILES=null;
-async function mushafFiles(){try{const{data}=await db.storage.from('mushaf').list('',{limit:200});FILES=new Set((data||[]).map(f=>f.name))}catch(e){FILES=FILES||new Set()}return FILES}
-async function openReader(juz,hizb){
- const rd=$('#rd');rd.style.display='flex';
- const jj=String(juz).padStart(2,'0'),files=await mushafFiles();
- const have=[1,2].filter(h=>files.has('juz'+jj+'-hizb'+h+'.pdf'));
- const store=JSON.parse(localStorage.read||'{}'),sv=store[juz]||{};
- hizb=hizb||(have.includes(sv.h)?sv.h:have[0]);
- const close=()=>{rd.style.display='none';rd.innerHTML=''};
- rd.innerHTML=`<div class="rb"><button class="btn alt" id="rc">إغلاق</button><b>الجزء ${juz}</b><div class="tabs">${have.map(h=>`<button class="tab ${h===hizb?'on':''}" data-h="${h}">${h===1?'الحزب الأول':'الحزب الثاني'}</button>`).join('')}</div></div><div class="rbody" id="rbody"></div>`;
- $('#rc').onclick=close;
- const box=$('#rbody');
- if(!have.length){box.innerHTML='<p class="sub" style="padding:30px">لم تُرفع ملفات هذا الجزء بعد.</p>';return}
- rd.querySelectorAll('.tab').forEach(b=>b.onclick=()=>openReader(juz,+b.dataset.h));
- box.innerHTML='<p class="sub" style="padding:30px">جارٍ التحميل…</p>';
- try{
-  const pdf=await pdfjsLib.getDocument(MUSHAF+'juz'+jj+'-hizb'+hizb+'.pdf').promise;
-  const p1=await pdf.getPage(1),v1=p1.getViewport({scale:1});
-  box.innerHTML='';const cs=[];
-  for(let n=1;n<=pdf.numPages;n++){const c=document.createElement('canvas');c.className='pg';c.dataset.n=n;c.style.aspectRatio=v1.width+'/'+v1.height;box.appendChild(c);cs.push(c)}
-  const io=new IntersectionObserver(es=>es.forEach(async e=>{const c=e.target;if(!e.isIntersecting||c.dataset.done)return;c.dataset.done=1;
-   const pg=await pdf.getPage(+c.dataset.n),v0=pg.getViewport({scale:1}),sc=Math.min(2.5,(box.clientWidth/v0.width)*(window.devicePixelRatio||1)),vp=pg.getViewport({scale:sc});
-   c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise}),{root:box,rootMargin:'800px'});
-  cs.forEach(c=>io.observe(c));
-  const startPage=(sv.h===hizb&&sv.p)?sv.p:0;
-  box.scrollTop=startPage*(cs[0].offsetHeight+8);
-  let t;box.onscroll=()=>{clearTimeout(t);t=setTimeout(()=>{const s=JSON.parse(localStorage.read||'{}');s[juz]={h:hizb,p:Math.round(box.scrollTop/(cs[0].offsetHeight+8))};localStorage.read=JSON.stringify(s)},400)};
- }catch(e){box.innerHTML='<p class="msg" style="padding:30px">تعذّر فتح الملف. تأكد من الاتصال وأعد المحاولة.</p>'}
-}
+ await load();timer=setInterval(()=>{if(!dlg.open&&rd.style.display!=='flex')load()},5000)}
 
-async function uploadPage(){
- clearInterval(timer);
- const OK=/^juz(0[1-9]|[12]\d|30)-hizb[12]\.pdf$/;
- const {data:{session}}=await owner.auth.getSession();
- if(!session){
-  app.innerHTML=`<h1>رفع المصحف</h1><p class="sub">لمالك الموقع فقط</p><form class="card" id="lf"><label for="em">البريد الإلكتروني</label><input id="em" type="text" inputmode="email" autocomplete="username" autocapitalize="none"><label for="pw">كلمة المرور</label><input id="pw" type="password" autocomplete="current-password"><p class="msg" id="lm"></p><button class="btn">دخول</button></form><a class="btn alt" href="#/">رجوع</a>`;
-  $('#lf').onsubmit=async e=>{e.preventDefault();const{error}=await owner.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});
-   if(error)$('#lm').textContent='البريد أو كلمة المرور غير صحيحة';else uploadPage()};
-  return}
- const{data:list}=await owner.storage.from('mushaf').list('',{limit:200});
- const have=new Set((list||[]).map(f=>f.name));
- const names=[];for(let j=1;j<=30;j++)for(const h of[1,2])names.push('juz'+String(j).padStart(2,'0')+'-hizb'+h+'.pdf');
- app.innerHTML=`<h1>رفع المصحف</h1><p class="sub">تم رفع ${names.filter(n=>have.has(n)).length} من 60 ملفًا</p>
- <div class="card"><h2>إضافة ملف واحد</h2><label for="uj">الجزء</label><select id="uj">${Array.from({length:30},(_,i)=>`<option value="${i+1}">الجزء ${i+1}</option>`).join('')}</select><label for="uh">الحزب</label><select id="uh"><option value="1">الحزب الأول</option><option value="2">الحزب الثاني</option></select><label class="btn alt" for="ufi">اختر ملف PDF وارفعه</label><input id="ufi" type="file" accept="application/pdf,.pdf" style="display:none"><p class="sub" id="us"></p></div>
- <div class="card"><label class="btn" for="fi">اختر ملف zip أو ملفات PDF</label>
- <input id="fi" type="file" multiple accept=".zip,.pdf,application/pdf,application/zip" style="display:none">
- <p class="sub" id="st">يمكنك رفع ملف zip كما هو، وسيُفك تلقائيًا. الأسماء المقبولة: juz01-hizb1.pdf إلى juz30-hizb2.pdf</p></div>
- <div class="card"><div class="chips">${names.map(n=>`<span class="chip ${have.has(n)?'ok':''}">${n.replace('.pdf','').replace('hizb','h')}${have.has(n)?' ✓':''}</span>`).join('')}</div></div>
- <button class="btn red" id="lo">تسجيل الخروج</button><a class="btn alt" href="#/">رجوع</a>`;
- $('#ufi').onchange=async e=>{const f=e.target.files[0];if(!f)return;const us=$('#us');
-  const nm='juz'+String($('#uj').value).padStart(2,'0')+'-hizb'+$('#uh').value+'.pdf';us.textContent='جارٍ رفع '+nm+'…';
-  const{error}=await owner.storage.from('mushaf').upload(nm,f,{upsert:true,contentType:'application/pdf'});
-  if(error){us.textContent='تعذّر الرفع: '+error.message}else{await uploadPage();$('#us').textContent='تم رفع '+nm}};
- $('#lo').onclick=async()=>{await owner.auth.signOut();uploadPage()};
- $('#fi').onchange=async e=>{const st=$('#st');const items=[];let skipped=0;
-  try{for(const f of e.target.files){
-    if(/\.zip$/i.test(f.name)){st.textContent='جارٍ فك الضغط…';const z=await JSZip.loadAsync(f);
-     for(const en of Object.values(z.files)){if(en.dir||en.name.includes('__MACOSX'))continue;const nm=en.name.split('/').pop();
-      if(OK.test(nm)){items.push([nm,new Blob([await en.async('arraybuffer')],{type:'application/pdf'})])}else skipped++}}
-    else if(OK.test(f.name))items.push([f.name,f]);else skipped++}
-   let done=0,fail=[];
-   for(const[nm,b]of items){st.textContent='جارٍ الرفع '+(++done)+' من '+items.length;
-    const{error}=await owner.storage.from('mushaf').upload(nm,b,{upsert:true,contentType:'application/pdf'});if(error)fail.push(nm)}
-   await uploadPage();
-   $('#st').textContent='تم رفع '+(items.length-fail.length)+' ملفًا'+(fail.length?'، وفشل: '+fail.join('، '):'')+(skipped?'، وتجاهلتُ '+skipped+' ملفًا بأسماء غير مطابقة':'')}
-  catch(x){st.textContent='تعذّر الرفع: '+(x.message||'خطأ')}}}
+async function view(n){
+ rd.style.display='flex';rd.innerHTML=`<div class="rb"><button class="sm" id="x">إغلاق</button><b>الجزء ${n}</b></div><div class="rbody" id="bd"><p class="ctr mut">جارٍ التحميل…</p></div>`;
+ $('#x').onclick=()=>{rd.style.display='none';rd.innerHTML=''};const bd=$('#bd');
+ if(!(await files()).has('juz'+N(n)+'.pdf')){bd.innerHTML='<p class="ctr" style="padding:30px">لم يُرفع هذا الجزء بعد، سيُضاف قريبًا.</p>';return}
+ try{const pdf=await pdfjsLib.getDocument(FILE(n)).promise,v=(await pdf.getPage(1)).getViewport({scale:1});bd.innerHTML='';const cs=[];
+  for(let i=1;i<=pdf.numPages;i++){const c=document.createElement('canvas');c.className='pg';c.dataset.n=i;c.style.aspectRatio=v.width+'/'+v.height;bd.appendChild(c);cs.push(c)}
+  const io=new IntersectionObserver(es=>es.forEach(async e=>{const c=e.target;if(!e.isIntersecting||c.dataset.d)return;c.dataset.d=1;
+   const pg=await pdf.getPage(+c.dataset.n),v0=pg.getViewport({scale:1}),vp=pg.getViewport({scale:Math.min(2.5,bd.clientWidth/v0.width*(devicePixelRatio||1))});
+   c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise}),{root:bd,rootMargin:'800px'});
+  cs.forEach(c=>io.observe(c));const hh=()=>cs[0].offsetHeight+8;bd.scrollTop=(+localStorage['pg'+n]||0)*hh();
+  let t;bd.onscroll=()=>{clearTimeout(t);t=setTimeout(()=>localStorage['pg'+n]=Math.round(bd.scrollTop/hh()),400)}}
+ catch(e){bd.innerHTML='<p class="msg ctr" style="padding:30px">تعذّر فتح الملف، أعد المحاولة.</p>'}}
+
+async function owner(){
+ const{data:{session}}=await ow.auth.getSession();
+ if(!session){app.innerHTML=`<h2 class="ctr">دخول المالك</h2><form class="c" id="lf"><label for="em">البريد الإلكتروني</label><input id="em" type="email" autocomplete="username"><label for="pw">كلمة المرور</label><input id="pw" type="password" autocomplete="current-password"><p class="msg" id="lm"></p><button class="b">دخول</button></form>`;
+  $('#lf').onsubmit=async e=>{e.preventDefault();const{error}=await ow.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});error?$('#lm').textContent='البريد أو كلمة المرور غير صحيحة':owner()};return}
+ const{data}=await ow.storage.from('mushaf').list('',{limit:100}),have=new Set((data||[]).map(f=>f.name));
+ app.innerHTML=`<h2 class="ctr">ملفات الأجزاء</h2><p class="ctr mut">ارفع ملف PDF لكل جزء، ويظهر للقراء فورًا (${[...Array(30)].filter((_,i)=>have.has('juz'+N(i+1)+'.pdf')).length} من 30)</p><p class="msg ctr" id="om"></p>
+ <div class="c">${[...Array(30)].map((_,i)=>{const n=i+1,h=have.has('juz'+N(n)+'.pdf');return `<div class="row"><span><b>الجزء ${n}</b> <span class="tag ${h?'ok':''}">${h?'مرفوع':'غير مرفوع'}</span></span><span>
+  <label class="sm" for="f${n}" style="margin:0">${h?'استبدال':'رفع'}</label><input id="f${n}" data-n="${n}" type="file" accept="application/pdf,.pdf" style="display:none">
+  ${h?`<button class="sm" data-v="${n}">عرض</button> <button class="sm r" data-x="${n}">حذف</button>`:''}</span></div>`}).join('')}</div>
+ <button class="b o" id="lo">تسجيل الخروج</button>`;
+ $('#lo').onclick=async()=>{await ow.auth.signOut();owner()};
+ app.onchange=async e=>{const n=e.target.dataset?.n,f=e.target.files?.[0];if(!n||!f)return;
+  if(f.size>5e7){$('#om').textContent='حجم الملف أكبر من 50 ميغابايت';return}
+  $('#om').textContent='جارٍ رفع الجزء '+n+'…';
+  const{error}=await ow.storage.from('mushaf').upload('juz'+N(n)+'.pdf',f,{upsert:true,contentType:'application/pdf'});
+  if(error){$('#om').textContent='تعذّر الرفع: '+error.message;return}await owner();$('#om').textContent='تم رفع الجزء '+n};
+ app.onclick=async e=>{const v=e.target.dataset?.v,x=e.target.dataset?.x;if(v)view(+v);
+  if(x&&confirm('حذف ملف الجزء '+x+'؟')){await ow.storage.from('mushaf').remove(['juz'+N(x)+'.pdf']);owner()}}}
 route();
 </script></body></html>
