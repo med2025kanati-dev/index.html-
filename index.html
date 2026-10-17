@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ختمة القرآن الكريم</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--bg:#eef3f1;--ink:#14302b;--mut:#4c6560;--pri:#1f5c54;--card:#fff;--line:#c5d6d1;--res:#8a5a12;--resbg:#fbf1dc;--done:#2a7a4b;--donebg:#dff1e6;--bad:#a33a2a}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1c1a;--ink:#e6f0ed;--mut:#9db5af;--pri:#5fb3a6;--card:#162926;--line:#2c4540;--res:#e3b768;--resbg:#2e2614;--done:#6fd196;--donebg:#17301f;--bad:#f08a78}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 19px/1.8 'Noto Naskh Arabic',serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+main{max-width:620px;margin:0 auto;padding:20px 16px 60px}
+h1,h2{font-family:Amiri,serif;font-weight:700;margin:.2em 0}
+h1{font-size:2.1rem;text-align:center}h2{font-size:1.5rem}
+.sub{text-align:center;color:var(--mut);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input[type=text]{width:100%;font:inherit;font-size:1.1rem;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+input:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400}.chk input{width:24px;height:24px;margin-top:6px}
+.btn{display:block;width:100%;min-height:56px;font:600 1.15rem 'Noto Naskh Arabic',serif;border:0;border-radius:14px;background:var(--pri);color:#fff;padding:12px;margin:10px 0 0;cursor:pointer;text-align:center;text-decoration:none}
+.btn.alt{background:transparent;color:var(--pri);border:2px solid var(--pri)}
+.btn.red{background:transparent;color:var(--bad);border:2px solid var(--bad)}
+.btn.wa{background:#1d8348}
+.btn:disabled{opacity:.5}
+.hero{display:grid;place-items:center;margin:8px 0}
+.ring{position:relative;width:210px;height:210px}.ring svg{width:100%;height:100%}
+.ring .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring b{font:700 2.8rem/1 Amiri,serif}.ring span{color:var(--mut);font-size:.95rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 4px}.stats b{display:block;font-size:1.5rem}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.j{min-height:92px;border-radius:14px;border:2px solid var(--pri);background:var(--card);color:var(--ink);font:inherit;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;line-height:1.35}
+.j b{font:700 1.6rem Amiri,serif}.j small{font-size:.85rem;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.j.reserved,.j.reading{border-color:var(--res);background:var(--resbg);cursor:default}
+.j.completed{border-color:var(--done);background:var(--donebg);cursor:default}
+.j.mine{box-shadow:0 0 0 4px var(--pri)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;color:var(--mut);font-size:.95rem;margin:10px 0}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-inline-end:5px}
+dialog{border:0;border-radius:18px;padding:20px;width:min(92vw,440px);background:var(--card);color:var(--ink)}dialog::backdrop{background:#0008}
+.msg{color:var(--bad);min-height:1.6em}
+.link{direction:ltr;text-align:left;font:500 .9rem monospace;word-break:break-all;background:var(--bg);padding:10px;border-radius:10px;margin:6px 0}
+details{color:var(--mut);margin-top:26px;font-size:.95rem}summary{cursor:pointer;font-weight:600}
+.ar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:10px 0;gap:10px}.ar .btn{width:auto;min-height:44px;margin:0;padding:6px 16px;font-size:1rem}
+</style>
+</head>
+<body><main id="app"></main>
+<dialog id="dlg"></dialog>
+<script>
+const SUPABASE_URL='https://YOUR-PROJECT.supabase.co', SUPABASE_KEY='YOUR-ANON-KEY';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=s=>document.querySelector(s), app=$('#app'), dlg=$('#dlg');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TOK=localStorage.tok||(localStorage.tok=crypto.randomUUID()+crypto.randomUUID());
+const ST={reserved:'محجوز',reading:'يقرأ الآن',completed:'مكتمل'};
+let timer;
+async function rpc(f,a){const{data,error}=await db.rpc(f,a);if(error)throw error;return data}
+const base=()=>location.origin+location.pathname;
+const privacy=`<details><summary>سياسة الخصوصية</summary><p>لا نطلب حسابًا ولا بريدًا ولا رقم هاتف. نحفظ فقط الاسم الذي تكتبه، وأسماء الأجزاء المحجوزة، ورمزًا عشوائيًا في متصفحك لتتحكم في حجزك. تُظهَر أسماء المشاركين للجميع فقط إذا فعّل منشئ الختمة ذلك، وإلا يراها المنشئ وحده، ويرى كل مشارك اسمه فقط. لا نبيع البيانات ولا نستخدم إعلانات. يمكنك طلب حذف الختمة من منشئها. إهداء الثواب وفق اعتقاد كل مشارك.</p></details>`;
+function route(){clearInterval(timer);const h=location.hash.split('/');
+ if(h[1]==='k')return khatma(h[2],false);
+ if(h[1]==='a')return khatma(h[2],true,h[3]);
+ home()}
+addEventListener('hashchange',route);
+
+function home(){
+ app.innerHTML=`<h1>ختمة القرآن الكريم</h1><p class="sub">اجمعوا الأجزاء الثلاثين بين الأهل والأصدقاء، كلٌّ يقرأ جزءًا</p>
+ <form class="card" id="f"><h2>ابدأ ختمة جديدة</h2>
+ <label for="d">اسم المتوفى (اختياري)</label><input id="d" type="text" maxlength="80" placeholder="رحمه الله">
+ <label for="c">اسمك</label><input id="c" type="text" maxlength="60" required value="${esc(localStorage.name||'')}">
+ <label class="chk"><input id="s" type="checkbox" checked><span>إظهار أسماء المشاركين لجميع من لديه الرابط</span></label>
+ <p class="msg" id="m"></p><button class="btn">أنشئ الختمة</button></form>
+ <div id="mine"></div>${privacy}`;
+ const mine=JSON.parse(localStorage.mine||'[]');
+ if(mine.length)$('#mine').innerHTML=`<div class="card"><h2>ختماتك</h2>${mine.map(m=>`<a class="btn alt" href="#/a/${m.slug}/${m.t}">${esc(m.title)}</a>`).join('')}</div>`;
+ $('#f').onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;
+  try{const name=$('#c').value.trim();localStorage.name=name;
+   const r=await rpc('create_khatma',{p_deceased:$('#d').value,p_creator:name,p_show_names:$('#s').checked});
+   mine.unshift({slug:r.slug,t:r.admin_token,title:$('#d').value.trim()||'ختمة '+name});localStorage.mine=JSON.stringify(mine.slice(0,20));
+   created(r)}catch(x){$('#m').textContent='تعذّر الإنشاء، تحقق من الاتصال وأعد المحاولة.';b.disabled=false}}}
+function created(r){
+ const pub=`${base()}#/k/${r.slug}`;
+ const wa='https://wa.me/?text='+encodeURIComponent('تفضلوا بالمشاركة في ختمة القرآن الكريم، احجز جزءًا واقرأه:\n'+pub);
+ app.innerHTML=`<h1>تم إنشاء الختمة</h1><div class="card"><h2>رابط المشاركين</h2><div class="link">${esc(pub)}</div>
+ <a class="btn wa" href="${wa}" target="_blank" rel="noopener">مشاركة عبر واتساب</a><button class="btn alt" onclick="navigator.clipboard.writeText('${pub}');this.textContent='تم النسخ'">نسخ الرابط</button></div>
+ <div class="card"><h2>رابط الإدارة (سرّي)</h2><p>احتفظ به ولا ترسله لأحد. به تتابع المشاركين وتلغي الحجوزات. حُفظ في هذا المتصفح أيضًا.</p><a class="btn" href="#/a/${r.slug}/${r.admin_token}">افتح صفحة الإدارة</a></div>`}
+
+async function khatma(slug,admin,at){
+ const load=async()=>{try{const k=await rpc('get_khatma',{p_slug:slug,p_token:TOK,p_admin:admin?at:null});
+   if(!k){app.innerHTML='<h1>الرابط غير صحيح</h1><a class="btn" href="#/">العودة</a>';return}
+   if(admin&&!k.is_admin){app.innerHTML='<h1>رمز الإدارة غير صحيح</h1>';return}
+   draw(k)}catch(e){const m=$('#err');if(m)m.textContent='انقطع الاتصال، سنعيد المحاولة'}};
+ const draw=k=>{
+  const by={};k.claims.forEach(c=>by[c.juz]=c);
+  const done=k.claims.filter(c=>c.status==='completed').length, held=k.claims.length-done, free=30-k.claims.length, pct=Math.round(done/30*100);
+  const C=2*Math.PI*88,seg=C/30;
+  const ring=[...Array(30)].map((_,i)=>{const s=by[i+1]?.status;const col=s==='completed'?'var(--done)':s?'var(--res)':'var(--line)';
+   return `<circle cx="100" cy="100" r="88" fill="none" stroke="${col}" stroke-width="14" stroke-dasharray="${seg-4} ${C-seg+4}" transform="rotate(${i*12-90} 100 100)"/>`}).join('');
+  const title=k.deceased_name?`ختمة عن روح ${esc(k.deceased_name)}`:'ختمة القرآن الكريم';
+  const mine=k.claims.filter(c=>c.mine);
+  app.innerHTML=`<h1>${title}</h1><p class="sub">منشئ الختمة: ${esc(k.creator_name)}${k.deceased_name?'<br>اللهم اغفر له وارحمه':''}</p>
+  ${admin?'<div class="card"><b>صفحة الإدارة</b> · لا تشارك هذا الرابط. رابط المشاركين: <div class="link">'+esc(base()+'#/k/'+slug)+'</div><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent('تفضلوا بالمشاركة في ختمة القرآن الكريم:\n'+base()+'#/k/'+slug)+'">مشاركة عبر واتساب</a></div>':''}
+  <div class="hero"><div class="ring"><svg viewBox="0 0 200 200">${ring}</svg><div class="c"><b>${pct}%</b><span>تم ${done} من 30 جزءًا</span></div></div></div>
+  <div class="stats"><div><b>${free}</b>متاح</div><div><b>${held}</b>محجوز</div><div><b>${done}</b>مكتمل</div></div>
+  ${done===30?'<div class="card" style="text-align:center"><h2>تمّت الختمة</h2><p>تقبّل الله من الجميع</p></div>':''}
+  <p class="msg" id="err"></p>
+  ${mine.length&&!admin?`<div class="card"><h2>أجزاؤك</h2>${mine.map(c=>`<div><b>الجزء ${c.juz}</b> · ${ST[c.status]}
+   <a class="btn alt" target="_blank" rel="noopener" href="https://quran.com/juz/${c.juz}">افتح المصحف</a>
+   ${c.status==='reserved'?`<button class="btn" data-a="reading" data-j="${c.juz}">بدأت القراءة</button>`:''}
+   ${c.status!=='completed'?`<button class="btn" data-a="completed" data-j="${c.juz}">أكملت القراءة</button><button class="btn red" data-a="release" data-j="${c.juz}">إلغاء الحجز</button>`:''}</div>`).join('<hr>')}</div>`:''}
+  <h2>${admin?'الحجوزات':'اختر جزءًا'}</h2>
+  <div class="legend"><span><i class="dot" style="background:var(--card);border:2px solid var(--pri)"></i>متاح</span><span><i class="dot" style="background:var(--res)"></i>محجوز</span><span><i class="dot" style="background:var(--done)"></i>مكتمل</span></div>
+  ${admin?`<div class="card">${k.claims.map(c=>`<div class="ar"><span><b>الجزء ${c.juz}</b> · ${esc(c.name)} · ${ST[c.status]}</span><button class="btn red" data-a="arelease" data-j="${c.juz}">إلغاء</button></div>`).join('')||'<p>لا توجد حجوزات بعد.</p>'}</div>`
+  :`<div class="grid">${[...Array(30)].map((_,i)=>{const c=by[i+1],s=c?.status||'free';
+    return `<button class="j ${s} ${c?.mine?'mine':''}" data-j="${i+1}" ${s==='free'?'':'disabled'} aria-label="الجزء ${i+1} ${s==='free'?'متاح':ST[s]}"><b>${i+1}</b><small>${s==='free'?'متاح':esc(c.name||ST[s])}</small>${s!=='free'&&c.name?`<small>${ST[s]}</small>`:''}</button>`}).join('')}</div>`}
+  ${privacy}`;
+  app.querySelectorAll('.j.free').forEach(b=>b.onclick=()=>pick(+b.dataset.j));
+  app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>act(b.dataset.a,+b.dataset.j))};
+ const act=async(a,j)=>{if(a==='release'&&!confirm('إلغاء حجز هذا الجزء؟'))return;if(a==='arelease'&&!confirm('إلغاء هذا الحجز؟'))return;
+  try{if(a==='release')await rpc('release_juz',{p_slug:slug,p_juz:j,p_token:TOK});
+   else if(a==='arelease')await rpc('admin_release',{p_slug:slug,p_juz:j,p_admin:at});
+   else await rpc('set_status',{p_slug:slug,p_juz:j,p_token:TOK,p_status:a});}catch(e){}
+  load()};
+ const pick=j=>{dlg.innerHTML=`<h2>حجز الجزء ${j}</h2><label for="n">اسمك</label><input id="n" type="text" maxlength="60" value="${esc(localStorage.name||'')}"><p class="msg" id="dm"></p>
+  <button class="btn" id="ok">احجز الجزء ${j}</button><button class="btn alt" id="no">إلغاء</button>`;dlg.showModal();
+  $('#no').onclick=()=>dlg.close();
+  $('#ok').onclick=async()=>{const n=$('#n').value.trim();if(!n){$('#dm').textContent='اكتب اسمك أولًا';return}
+   $('#ok').disabled=true;localStorage.name=n;
+   try{const r=await rpc('claim_juz',{p_slug:slug,p_juz:j,p_name:n,p_token:TOK});
+    if(r==='ok'){dlg.close();load();return}
+    $('#dm').textContent=r==='taken'?'سبقك أحدهم إلى هذا الجزء، اختر جزءًا آخر.':r==='limit'?'يمكنك حجز 3 أجزاء نشطة كحد أقصى.':'تعذّر الحجز.';
+    if(r==='taken'){setTimeout(()=>{dlg.close();load()},1800)}else $('#ok').disabled=false}
+   catch(e){$('#dm').textContent='تعذّر الاتصال، أعد المحاولة.';$('#ok').disabled=false}}};
+ await load();timer=setInterval(()=>{if(!dlg.open)load()},5000)}
+route();
+</script></body></html>
