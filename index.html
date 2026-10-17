@@ -100,7 +100,7 @@ function auth(mode,role){
  <p class="msg" id="am"></p><button class="b">${mode==='in'?'دخول':'إنشاء الحساب'}</button></form>
  ${mode==='in'?'<a class="b o" href="#/signup/join">ليس لدي حساب: تسجيل</a>':'<a class="b o" href="#/login">لدي حساب: دخول</a>'}<a class="b o" href="#/">الصفحة الرئيسية</a></div>`;
  $('#af').onsubmit=async e=>{e.preventDefault();const email=$('#ae').value.trim(),password=$('#ap').value,am=$('#am');
-  const r=mode==='in'?await db.auth.signInWithPassword({email,password}):await db.auth.signUp({email,password,options:{data:{name:$('#an').value.trim()}}});
+  const r=mode==='in'?await db.auth.signInWithPassword({email,password}):await db.auth.signUp({email,password,options:{data:{name:$('#an').value.trim()},emailRedirectTo:location.origin+location.pathname}});
   if(r.error){am.textContent=mode==='in'?'البريد أو كلمة المرور غير صحيحة':'تعذّر إنشاء الحساب: '+r.error.message;return}
   if(!r.data.session){am.style.color='var(--ok)';am.textContent='تم إنشاء الحساب. افتح بريدك واضغط رابط التأكيد ثم ادخل.';return}
   await who();const rt=sessionStorage.ret;sessionStorage.removeItem('ret');
