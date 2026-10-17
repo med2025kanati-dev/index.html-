@@ -76,11 +76,36 @@ const ago=t=>{const m=Math.round((Date.now()-new Date(t))/6e4);return m<2?'ال�
 const wa=s=>'https://wa.me/?text='+encodeURIComponent('تفضلوا بالمشاركة في ختمة القرآن الكريم، احجز جزءًا واقرأه:\n'+pubUrl(s));
 const PRIV=`<details><summary>سياسة الخصوصية</summary><p class="mut">القارئ لا يحتاج حسابًا. نحفظ الاسم الذي تكتبه والجزء الذي تحجزه ومكان توقفك في القراءة، ورمزًا عشوائيًا في متصفحك لتتحكم في حجزك. تظهر الأسماء للجميع فقط إذا فعّل المنشئ ذلك، وإلا يراها المنشئ وحده وترى اسمك أنت. لا نبيع البيانات ولا نعرض إعلانات. الثواب يُهدى وفق اعتقاد كل مشارك.</p></details>`;
 let timer,me={s:null,owner:false},META={};
+let CFG={},MSGS=[];const F=(k,d=true)=>{const v=(CFG.flags||{})[k];return v===undefined?d:v};
+const trDone=new WeakMap();
+function tr(){const tx=CFG.texts;if(!tx||app.dataset.ctl||!Object.keys(tx).length)return;
+ const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
+ while(n=w.nextNode()){if(trDone.get(n)===n.nodeValue)continue;let v=n.nodeValue,ch=false;
+  for(const[a,b]of Object.entries(tx)){if(v.includes(a)){v=v.split(a).join(b);ch=true}}
+  if(ch){n.nodeValue=v;trDone.set(n,v)}}}
+let tq;new MutationObserver(()=>{clearTimeout(tq);tq=setTimeout(tr,30)}).observe(document.body,{childList:true,subtree:true,characterData:true});
+async function loadCfg(){try{CFG=(await rpc('site_config'))||{}}catch(e){CFG={}}tr()}
+function fatiha(){rd.style.display='flex';rd.innerHTML='<div class="rb"><button class="sm" id="x">إغلاق</button><b>سورة الفاتحة</b></div><div class="rbody"><img src="fatiha.jpg" alt="سورة الفاتحة" style="display:block;width:100%;max-width:700px;margin:0 auto;background:#fff;border-radius:8px"></div>';$('#x').onclick=()=>{rd.style.display='none';rd.innerHTML=''}}
+const FLAGS=[['site_open','فتح الموقع للزوار (إيقافه = وضع الصيانة)'],['show_browse','عرض قائمة الختمات المتاحة في الصفحة العامة'],['signup_create','السماح بالتسجيل لإنشاء ختمة'],['signup_join','السماح بالتسجيل للانضمام'],['guest','السماح بالانضمام كزائر بلا حساب'],['fatiha','عرض سورة الفاتحة في صفحة الختمة'],['new_khatma','السماح بإنشاء ختمات جديدة']];
+const TEXTS=['ختمة القرآن الكريم','اجتمعوا على كتاب الله: كل قارئ يأخذ جزءًا حتى تتم الختمة، وثوابها يُهدى وفق اعتقاد المشاركين.','سجّل حسابًا لإنشاء ختمة','سجّل حسابًا للانضمام إلى ختمة','الختمات المتاحة للقراءة','متاح للقراءة','أثناء القراءة','مكتمل','منضم للختمة','افتح الختمة','اقرأ الآن','أكملت القراءة','إلغاء الحجز','اختر جزءًا','سورة الفاتحة','سياسة الخصوصية'];
+async function control(){
+ app.dataset.ctl=1;const tx=CFG.texts||{};
+ app.innerHTML=`<h2 class="ctr">التحكم والكتابات</h2><p class="ctr mut">تُحفظ الإعدادات وتظهر لكل الزوار.</p>
+ <div class="c"><h2>الصفحات والميزات</h2>${FLAGS.map(([k,t])=>`<label style="display:flex;gap:10px;font-weight:400"><input type="checkbox" data-f="${k}" ${F(k)?'checked':''} style="width:24px;height:24px;margin-top:6px"><span>${t}</span></label>`).join('')}<label for="cm">رسالة الصيانة</label><input id="cm" type="text" maxlength="200" value="${esc(CFG.closed_msg||'')}"></div>
+ <div class="c"><h2>تغيير الكلمات</h2><p class="mut">اكتب بديل أي عبارة، واتركه فارغًا للنص الأصلي. يُستبدل النص في كل مواضع ظهوره.</p>${TEXTS.map((t,i)=>`<label>${esc(t)}</label><input type="text" data-t="${i}" maxlength="200" value="${esc(tx[t]||'')}">`).join('')}</div>
+ <p class="msg ctr" id="cmsg"></p><button class="b" id="cs">حفظ</button><a class="b o" href="#/site">رجوع</a>`;
+ $('#cs').onclick=async()=>{const f={},t={};app.querySelectorAll('[data-f]').forEach(c=>f[c.dataset.f]=c.checked);app.querySelectorAll('[data-t]').forEach(i=>{const v=i.value.trim();if(v)t[TEXTS[i.dataset.t]]=v});
+  try{await rpc('set_site_config',{p_key:'flags',p_value:f});await rpc('set_site_config',{p_key:'texts',p_value:t});await rpc('set_site_config',{p_key:'closed_msg',p_value:$('#cm').value.trim()});await loadCfg();$('#cmsg').style.color='var(--ok)';$('#cmsg').textContent='تم الحفظ'}
+  catch(e){$('#cmsg').style.color='var(--bad)';$('#cmsg').textContent='تعذّر الحفظ'}}}
+
 async function who(){const{data:{session}}=await db.auth.getSession();me.s=session;me.owner=false;TOK=session?'u:'+session.user.id:DEV;if(session){try{me.owner=await rpc('is_owner')}catch(e){}}}
-async function route(){clearInterval(timer);app.onclick=app.onchange=null;
- if(!me.init){await who();me.init=1}
+async function route(){clearInterval(timer);app.onclick=app.onchange=null;delete app.dataset.ctl;
+ if(!me.init){await who();await loadCfg();me.init=1}
  $('#nav').innerHTML=me.s?'<a href="#/me">حسابي</a>':'<a href="#/login">دخول</a>';
  const h=location.hash.split('/');
+ if(!F('site_open')&&!me.owner&&h[1]!=='login'){app.innerHTML=`<div class="c ctr"><h2>الموقع مغلق مؤقتًا</h2><p>${esc(CFG.closed_msg||'نعود قريبًا بإذن الله.')}</p></div>`;return}
+ if(h[1]==='signup'&&!F(h[2]==='create'?'signup_create':'signup_join')){app.innerHTML='<div class="c ctr"><h2>هذه الصفحة غير متاحة حاليًا</h2></div><a class="b o" href="#/">الصفحة الرئيسية</a>';return}
+ if(h[1]==='control')return me.owner?control():(location.hash='#/');
  if(h[1]==='k')return pub(h[2]);
  if(h[1]==='login')return auth('in');
  if(h[1]==='signup')return auth('up',h[2]);
@@ -109,9 +134,10 @@ function auth(mode,role){
 
 async function home(){
  app.innerHTML=`<div class="hero"><h1>ختمة القرآن الكريم</h1><p>اجتمعوا على كتاب الله: كل قارئ يأخذ جزءًا حتى تتم الختمة، وثوابها يُهدى وفق اعتقاد المشاركين.</p>
- <a class="b w" href="#/signup/create">سجّل حسابًا لإنشاء ختمة</a><a class="b w2" href="#/signup/join">سجّل حسابًا للانضمام إلى ختمة</a>
+ ${F('signup_create')?'<a class="b w" href="#/signup/create">سجّل حسابًا لإنشاء ختمة</a>':''}${F('signup_join')?'<a class="b w2" href="#/signup/join">سجّل حسابًا للانضمام إلى ختمة</a>':''}
  ${me.s?'<a class="hl" href="#/me">الدخول إلى حسابي</a>':'<a class="hl" href="#/login">لدي حساب: دخول</a>'}</div>
- <h2>الختمات المتاحة للقراءة</h2><div id="bl"><p class="ctr mut">جارٍ التحميل…</p></div>${PRIV}`;
+ ${F('show_browse')?'<h2>الختمات المتاحة للقراءة</h2><div id="bl"><p class="ctr mut">جارٍ التحميل…</p></div>':''}${PRIV}`;
+ if(!F('show_browse'))return;
  try{const l=await rpc('public_khatmas');
   $('#bl').innerHTML=l.length?l.map(k=>`<div class="c kc"><h3>${esc(k.title||(k.deceased_name?'ختمة عن روح '+k.deceased_name:'ختمة القرآن الكريم'))}</h3>
    <p class="mut" style="margin:0">المنشئ: ${esc(k.creator_name)} · ${new Date(k.created_at).toLocaleDateString('ar')}${k.deceased_name?' · المُهدى إليه: '+esc(k.deceased_name):''}</p>
@@ -124,19 +150,19 @@ async function home(){
 async function dash(){
  const nm=me.s.user.user_metadata?.name||'';
  app.innerHTML=`<h2 class="ctr">حسابي</h2><p class="ctr mut">أهلًا ${esc(nm)}</p>
- <form class="c" id="f"><h2>ختمة جديدة</h2><label for="ti">عنوان الختمة</label><input id="ti" type="text" maxlength="100" placeholder="مثال: ختمة عن روح المرحوم فلان"><label for="kd">نوع الختمة</label><select id="kd"><option value="deceased">إهداء ثواب لمتوفى</option><option value="general">ختمة عامة</option></select><label for="d">اسم المتوفى (إن وُجد)</label><input id="d" type="text" maxlength="80"><label for="ds">وصف (اختياري)</label><input id="ds" type="text" maxlength="300"><label for="du">دعاء (اختياري)</label><input id="du" type="text" maxlength="300">
+ <form class="c" id="f"><h2>ختمة جديدة</h2><label for="ti">عنوان الختمة</label><input id="ti" type="text" maxlength="100" placeholder="مثال: ختمة عن روح المرحوم فلان"><label for="kd">نوع الختمة</label><select id="kd"><option value="deceased">إهداء ثواب لمتوفى</option><option value="general">ختمة عامة</option><option value="personal">ختمة فردية خاصة (أقرأها وحدي)</option></select><label for="d">اسم المتوفى (إن وُجد)</label><input id="d" type="text" maxlength="80"><label for="ds">وصف (اختياري)</label><input id="ds" type="text" maxlength="300"><label for="du">دعاء (اختياري)</label><input id="du" type="text" maxlength="300">
  <label style="display:flex;gap:10px;font-weight:400"><input id="s" type="checkbox" checked style="width:24px;height:24px;margin-top:6px"><span>إظهار أسماء المشاركين للقراء</span></label>
  <label style="display:flex;gap:10px;font-weight:400"><input id="pb" type="checkbox" style="width:24px;height:24px;margin-top:6px"><span>عرض الختمة في الصفحة العامة (يظهر العنوان وعدد الأجزاء فقط)</span></label>
  <p class="msg" id="m"></p><button class="b">أنشئ الختمة</button></form><div id="ml"></div>
- ${me.owner?'<a class="b" href="#/site">لوحة إدارة الموقع</a><a class="b o" href="#/files">ملفات الأجزاء (للمالك)</a>':''}<a class="b o" href="#/">الصفحة الرئيسية</a><button class="b o" id="lo">تسجيل الخروج</button>${PRIV}`;
+ ${me.owner?'<a class="b" href="#/site">لوحة إدارة الموقع</a><a class="b" href="#/control">التحكم والكتابات</a><a class="b o" href="#/files">ملفات الأجزاء (للمالك)</a>':''}<a class="b o" href="#/">الصفحة الرئيسية</a><button class="b o" id="lo">تسجيل الخروج</button>${PRIV}`;
  $('#lo').onclick=async()=>{await db.auth.signOut();me.s=null;me.owner=false;TOK=DEV;if(location.hash!=='#/')location.hash='#/';else route()};
- $('#f').onsubmit=async e=>{e.preventDefault();const bt=e.submitter;bt.disabled=true;
-  try{const sl=await rpc('create_khatma',{p_deceased:$('#d').value,p_creator:nm||'المنشئ',p_show_names:$('#s').checked});await rpc('update_khatma',{p_slug:sl,p_title:$('#ti').value,p_desc:$('#ds').value,p_dua:$('#du').value,p_kind:$('#kd').value});if($('#pb').checked)await rpc('set_public',{p_slug:sl,p_public:true});location.hash='#/a/'+sl}
+ $('#f').onsubmit=async e=>{e.preventDefault();if(!F('new_khatma')){$('#m').textContent='إنشاء الختمات الجديدة متوقف مؤقتًا.';return}const bt=e.submitter;bt.disabled=true;
+  try{const sl=await rpc('create_khatma',{p_deceased:$('#d').value,p_creator:nm||'المنشئ',p_show_names:$('#s').checked});await rpc('update_khatma',{p_slug:sl,p_title:$('#ti').value,p_desc:$('#ds').value,p_dua:$('#du').value,p_kind:$('#kd').value});if($('#pb').checked&&$('#kd').value!=='personal')await rpc('set_public',{p_slug:sl,p_public:true});location.hash='#/a/'+sl}
   catch(x){$('#m').textContent='تعذّر الإنشاء، أعد المحاولة.';bt.disabled=false}};
  try{const l=await rpc('my_khatmas');
   $('#ml').innerHTML=l.length?`<h2>ختماتي</h2>`+l.map(k=>`<div class="c"><b>${esc(k.title||(k.deceased_name?'عن روح '+k.deceased_name:'ختمة القرآن الكريم'))}</b> <span class="tag">${k.status==='stopped'?'متوقفة':k.status==='completed'?'مكتملة':'جارية'}</span>
    <p class="mut" style="margin:0">${k.participants} منضم · ${k.reading} أثناء القراءة · ${k.completed} مكتمل من 30</p>
-   <a class="b" href="#/a/${k.slug}">الإدارة والإحصائيات</a><button class="b o" data-cp="${k.slug}">نسخ رابط القراءة</button></div>`).join(''):'';
+   <a class="b" href="#/a/${k.slug}">الإدارة والإحصائيات</a><a class="b o" href="#/k/${k.slug}">صفحة القراءة${k.kind==='personal'?' (ختمة فردية)':''}</a>${k.kind==='personal'?'':`<button class="b o" data-cp="${k.slug}">نسخ رابط القراءة</button>`}</div>`).join(''):'';
   app.onclick=e=>{const s=e.target.dataset?.cp;if(s){navigator.clipboard.writeText(pubUrl(s));e.target.textContent='تم النسخ'}}}catch(e){}}
 
 const calc=k=>{const by={};k.claims.forEach(c=>by[c.juz]=c);const done=k.claims.filter(c=>c.status==='completed').length;return{by,done,held:k.claims.length-done,free:30-k.claims.length}};
@@ -146,19 +172,20 @@ const title=k=>`<div class="khead"><h2 class="ctr">${META.title?esc(META.title):
 
 async function pub(slug){
  const load=async()=>{try{const k=await rpc('get_khatma',{p_slug:slug,p_token:TOK});META=(await rpc('khatma_meta',{p_slug:slug}))||{};
-  if(!k){app.innerHTML='<p class="ctr">الرابط غير صحيح</p>';return}draw(k)}catch(e){const m=$('#err');if(m)m.textContent='انقطع الاتصال، سنعيد المحاولة'}};
- const draw=k=>{const s=calc(k),my=k.claims.filter(c=>c.mine);
+  if(!k){app.innerHTML='<p class="ctr">الرابط غير صحيح</p>';return}try{MSGS=await rpc('my_msgs',{p_slug:slug,p_token:TOK})}catch(e){MSGS=[]}draw(k)}catch(e){const m=$('#err');if(m)m.textContent='انقطع الاتصال، سنعيد المحاولة'}};
+ const draw=k=>{if(META.kind==='personal'&&!k.is_admin){app.innerHTML='<div class="c ctr"><h2>ختمة خاصة</h2><p>هذه ختمة فردية لا تقبل مشاركين.</p></div><a class="b o" href="#/">الصفحة الرئيسية</a>';return}
+  const s=calc(k),my=k.claims.filter(c=>c.mine);
   app.innerHTML=`${title(k)}${tiles(k,s)}<div class="c">${bar(s.by,s.done)}</div>
   ${s.done===30?'<div class="c ctr"><h2>تمّت الختمة، تقبّل الله من الجميع</h2></div>':''}<p class="msg ctr" id="err"></p>
-  ${my.length?`<div class="c"><h2>أجزائي</h2>${my.map(c=>`<div class="row" style="display:block"><b>الجزء ${c.juz}</b> <span class="tag ${c.status==='completed'?'ok':''}">${L(c.status)}</span>
+  ${MSGS.map(m=>`<div class="c" style="border-color:var(--gold);background:var(--goldbg)"><b>رسالة من منشئ الختمة</b> · الجزء ${m.juz}<p style="margin:4px 0">${esc(m.body)}</p><span class="mut">${ago(m.at)}</span></div>`).join('')}${my.length?`<div class="c"><h2>أجزائي</h2>${my.map(c=>`<div class="row" style="display:block"><b>الجزء ${c.juz}</b> <span class="tag ${c.status==='completed'?'ok':''}">${L(c.status)}</span>
    ${c.page?`<p class="mut" style="margin:0">توقفت عند صفحة ${c.page} من ${c.pages}</p>`:''}
    <button class="b" data-a="read" data-j="${c.juz}">${c.page?'أكمل من حيث توقفت':'اقرأ الآن'}</button>
    ${c.status!=='completed'?`<button class="b o" data-a="completed" data-j="${c.juz}">أكملت القراءة</button><button class="b r" data-a="release" data-j="${c.juz}">إلغاء الحجز</button>`:''}</div>`).join('')}</div>`:''}
-  <h2>اختر جزءًا</h2><div class="g30">${[...Array(30)].map((_,i)=>{const c=s.by[i+1];
+  ${F('fatiha')?'<div class="c kc"><b>سورة الفاتحة</b> <span class="tag ok">متاحة للجميع</span><p class="mut" style="margin:4px 0">يقرؤها كل من أراد في أي وقت، ولا تُحجز.</p><button class="b o" data-a="fat">اقرأ سورة الفاتحة</button></div>':''}${s.free===0&&s.done<30?'<div class="c ctr"><b>اكتمل عدد القراء</b><p class="mut" style="margin:0">جميع الأجزاء مع قراء آخرين، ولا يمكن الانضمام حاليًا. تُفتح الأجزاء إذا انسحب أحدهم.</p></div>':''}<h2>اختر جزءًا</h2><div class="g30">${[...Array(30)].map((_,i)=>{const c=s.by[i+1];
    return `<button class="t ${c?c.status==='completed'?'d':'r':''} ${c?.mine?'me':''}" data-a="pick" data-j="${i+1}" ${c?'disabled':''}><b>${i+1}</b><small>${c?esc(c.name||L(c.status)):'متاح للقراءة'}</small></button>`}).join('')}</div>${PRIV}`;
   app.onclick=e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,+b.dataset.j,k)}};
  const act=async(a,j,k)=>{
-  if(a==='pick')return pick(j);
+  if(a==='fat')return fatiha();if(a==='pick')return pick(j);
   if(a==='read'){const c=k.claims.find(x=>x.juz===j);return view(j,{slug,page:c?.page,mine:1,done:load})}
   if(a==='release'&&!confirm('إلغاء حجز هذا الجزء؟'))return;
   try{if(a==='release')await rpc('release_juz',{p_slug:slug,p_juz:j,p_token:TOK});else await rpc('set_status',{p_slug:slug,p_juz:j,p_token:TOK,p_status:a})}catch(e){}load()};
@@ -168,12 +195,12 @@ async function pub(slug){
    $('#ok').disabled=true;localStorage.name=n;
    try{const r=await rpc('claim_juz',{p_slug:slug,p_juz:j,p_name:n,p_token:TOK});
     if(r==='ok'){dlg.close();load();return}
-    $('#dm').textContent=r==='taken'?'سبقك أحدهم إلى هذا الجزء، اختر جزءًا آخر.':r==='limit'?'يمكنك حجز 3 أجزاء كحد أقصى في الوقت نفسه.':'تعذّر الحجز.';
+    $('#dm').textContent=r==='taken'?'سبقك أحدهم إلى هذا الجزء، اختر جزءًا آخر.':r==='limit'?'يمكنك حجز 3 أجزاء كحد أقصى في الوقت نفسه.':r==='private'?'هذه ختمة خاصة.':'تعذّر الحجز.';
     if(r==='taken')setTimeout(()=>{dlg.close();load()},1800);else $('#ok').disabled=false}
    catch(e){$('#dm').textContent=/khatma_closed/.test(e.message||'')?'الختمة متوقفة أو مكتملة ولا تقبل حجزًا جديدًا.':'تعذّر الاتصال، أعد المحاولة.';$('#ok').disabled=false}}};
- const pick=j=>{if(me.s||sessionStorage.guest)return pickName(j);
-  dlg.innerHTML=`<h2>للانضمام إلى الختمة</h2><p class="mut">بحساب تُحفظ أجزاؤك ومكان قراءتك على كل أجهزتك.</p><a class="b" href="#/signup/join" onclick="sessionStorage.ret=location.hash">تسجيل حساب</a><a class="b o" href="#/login" onclick="sessionStorage.ret=location.hash">لدي حساب: دخول</a><button class="b o" id="gs">المتابعة كزائر بلا حساب</button><button class="b r" id="gc">إغلاق</button>`;dlg.showModal();
-  $('#gs').onclick=()=>{sessionStorage.guest=1;dlg.close();pickName(j)};$('#gc').onclick=()=>dlg.close()};
+ const pick=j=>{if(me.s||(F('guest')&&sessionStorage.guest))return pickName(j);
+  dlg.innerHTML=`<h2>للانضمام إلى الختمة</h2><p class="mut">بحساب تُحفظ أجزاؤك ومكان قراءتك على كل أجهزتك.</p><a class="b" href="#/signup/join" onclick="sessionStorage.ret=location.hash">تسجيل حساب</a><a class="b o" href="#/login" onclick="sessionStorage.ret=location.hash">لدي حساب: دخول</a>${F('guest')?'<button class="b o" id="gs">المتابعة كزائر بلا حساب</button>':''}<button class="b r" id="gc">إغلاق</button>`;dlg.showModal();
+  if($('#gs'))$('#gs').onclick=()=>{sessionStorage.guest=1;dlg.close();pickName(j)};$('#gc').onclick=()=>dlg.close()};
  await load();timer=setInterval(()=>{if(!dlg.open&&rd.style.display!=='flex')load()},5000)}
 
 async function admin(slug){
@@ -185,8 +212,9 @@ async function admin(slug){
   <a class="b g" target="_blank" rel="noopener" href="${wa(slug)}">إرسال عبر واتساب</a><button class="b o" data-a="cp">نسخ الرابط</button></div>
   ${tiles(k,s)}<div class="c">${bar(s.by,s.done)}</div>
   <div class="c"><h2>المشاركون والأجزاء</h2>${k.claims.map(c=>`<div class="row"><span><b>الجزء ${c.juz}</b> · ${esc(c.name)}<br><span class="mut">${L(c.status)}${c.page?' · صفحة '+c.page+' من '+c.pages:''} · ${ago(c.at)}</span></span>
-   <span>${c.status!=='completed'?`<button class="sm" data-a="adone" data-j="${c.juz}">أكمل</button> `:''}<button class="sm r" data-a="arel" data-j="${c.juz}">إلغاء</button></span></div>`).join('')||'<p class="mut">لا توجد حجوزات بعد.</p>'}</div>
+   <span>${c.status!=='completed'?`<button class="sm" data-a="msg" data-j="${c.juz}">رسالة</button> <button class="sm" data-a="adone" data-j="${c.juz}">أكمل</button> `:''}<button class="sm r" data-a="arel" data-j="${c.juz}">إلغاء</button></span></div>`).join('')||'<p class="mut">لا توجد حجوزات بعد.</p>'}</div>
   <div class="c"><h2>آخر التحديثات</h2>${(META.events||[]).map(e=>`<div class="row"><span>${esc(e.name)} ${e.kind==='claim'?'اختار':e.kind==='complete'?'أتمّ':'أعاد'} الجزء ${e.juz}</span><span class="mut">${ago(e.at)}</span></div>`).join('')||'<p class="mut">لا توجد تحديثات بعد.</p>'}</div>
+  <button class="b g" data-a="remind">إرسال تذكير لكل من لم يُكمل</button>
   <button class="b o" data-a="pb">${META.is_public?'إخفاء الختمة من الصفحة العامة':'عرض الختمة في الصفحة العامة'}</button>
   <button class="b o" data-a="ed">تعديل العنوان والوصف</button><button class="b o" data-a="st">${META.status==='stopped'?'استئناف الختمة':'إيقاف الختمة مؤقتًا'}</button>
   <button class="b o" data-a="tn">${k.show_names?'إخفاء أسماء المشاركين عن القراء':'إظهار أسماء المشاركين للقراء'}</button>
@@ -197,6 +225,7 @@ async function admin(slug){
    if(a==='adel'){if(!confirm('سيُحذف كل شيء في هذه الختمة. متأكد؟'))return;await rpc('admin_delete',{p_slug:slug});location.hash='#/';return}
    try{if(a==='arel')await rpc('admin_release',{p_slug:slug,p_juz:j});
     else if(a==='adone')await rpc('admin_set_status',{p_slug:slug,p_juz:j,p_status:'completed'});
+    else if(a==='msg'||a==='remind'){const t=prompt(a==='msg'?'نص الرسالة للمشارك (تظهر له عند فتح الختمة):':'نص التذكير لكل من لم يُكمل:','السلام عليكم، من فضلك لا تنسَ إكمال القراءة، جزاك الله خيرًا.');if(!t)return;const n=await rpc('admin_send_msg',{p_slug:slug,p_juz:a==='msg'?j:null,p_body:t});alert('تم الإرسال إلى '+n+' قارئ')}
     else if(a==='pb')await rpc('set_public',{p_slug:slug,p_public:!META.is_public});
     else if(a==='st')await rpc('set_khatma_status',{p_slug:slug,p_status:META.status==='stopped'?'active':'stopped'});
     else if(a==='ed'){const t=prompt('عنوان الختمة',META.title||'');if(t===null)return;const d=prompt('وصف الختمة',META.description||'');await rpc('update_khatma',{p_slug:slug,p_title:t,p_desc:d??'',p_dua:META.dua||'',p_kind:META.kind||'deceased'})}
