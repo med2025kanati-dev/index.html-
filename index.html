@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ختمة القرآن الكريم</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
@@ -26,6 +27,11 @@ input:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--pri);ou
 .btn.red{background:transparent;color:var(--bad);border:2px solid var(--bad)}
 .btn.wa{background:#1d8348}
 .btn:disabled{opacity:.5}
+#rd{position:fixed;inset:0;background:var(--bg);z-index:50;display:none;flex-direction:column;padding-top:env(safe-area-inset-top)}
+.rb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--line)}.rb .btn{width:auto;min-height:44px;margin:0;padding:4px 16px;font-size:1rem}
+.tabs{display:flex;gap:6px;margin-inline-start:auto}.tab{font-weight:600;font-size:1rem;font-family:inherit;min-height:44px;padding:0 14px;border-radius:12px;border:2px solid var(--pri);background:transparent;color:var(--pri)}.tab.on{background:var(--pri);color:#fff}
+.rbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 6px 40px}.pg{display:block;width:100%;max-width:900px;margin:0 auto 8px;background:#fff;border-radius:6px}
+select{width:100%;font:inherit;font-size:1.1rem;padding:13px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:2px solid var(--line);border-radius:10px;padding:0 8px;font-size:.85rem;direction:ltr}.chip.ok{border-color:var(--done);background:var(--donebg)}
 .row2{display:flex;gap:10px}.row2 .btn{flex:1}
 .row{display:flex;gap:10px}.row .btn{margin-top:10px}
@@ -52,6 +58,7 @@ details{color:var(--mut);margin-top:26px;font-size:.95rem}summary{cursor:pointer
 </head>
 <body><main id="app"></main>
 <dialog id="dlg"></dialog>
+<div id="rd"></div>
 <script>
 const SUPABASE_URL='https://knwdlmboealgjyomaqtb.supabase.co', SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtud2RsbWJvZWFsZ2p5b21hcXRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxODExNDYsImV4cCI6MjEwNzc1NzE0Nn0.68rccaY3gTQXWs9AKZD_yUzKQWo_-EoSsCulmTKPLkY';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -114,7 +121,7 @@ async function khatma(slug,admin,at){
   ${done===30?'<div class="card" style="text-align:center"><h2>تمّت الختمة</h2><p>تقبّل الله من الجميع</p></div>':''}
   <p class="msg" id="err"></p>
   ${mine.length&&!admin?`<div class="card"><h2>أجزاؤك</h2>${mine.map(c=>`<div><b>الجزء ${c.juz}</b> · ${ST[c.status]}
-   <div class="row2"><a class="btn alt" target="_blank" rel="noopener" href="${MUSHAF}juz${String(c.juz).padStart(2,'0')}-hizb1.pdf">الحزب الأول</a><a class="btn alt" target="_blank" rel="noopener" href="${MUSHAF}juz${String(c.juz).padStart(2,'0')}-hizb2.pdf">الحزب الثاني</a></div>
+   <button class="btn" data-r="${c.juz}">مواصلة القراءة</button>
    ${c.status==='reserved'?`<button class="btn" data-a="reading" data-j="${c.juz}">بدأت القراءة</button>`:''}
    ${c.status!=='completed'?`<button class="btn" data-a="completed" data-j="${c.juz}">أكملت القراءة</button><button class="btn red" data-a="release" data-j="${c.juz}">إلغاء الحجز</button>`:''}</div>`).join('<hr>')}</div>`:''}
   <h2>${admin?'الحجوزات':'اختر جزءًا'}</h2>
@@ -125,7 +132,8 @@ async function khatma(slug,admin,at){
   <p class="sub" style="margin-top:22px">المصحف: برواية ورش عن نافع، مصحف المدينة النبوية (مجمع الملك فهد لطباعة المصحف الشريف)، بحسب بيانات الملف المستخدم. صفحة الحدّ بين الحزبين تتكرر في الملفين عمدًا.</p>
   ${privacy}`;
   app.querySelectorAll('.j.free').forEach(b=>b.onclick=()=>pick(+b.dataset.j));
-  app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>act(b.dataset.a,+b.dataset.j))};
+  app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>act(b.dataset.a,+b.dataset.j));
+  app.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>openReader(+b.dataset.r))};
  const act=async(a,j)=>{if(a==='release'&&!confirm('إلغاء حجز هذا الجزء؟'))return;if(a==='arelease'&&!confirm('إلغاء هذا الحجز؟'))return;
   try{if(a==='release')await rpc('release_juz',{p_slug:slug,p_juz:j,p_token:TOK});
    else if(a==='arelease')await rpc('admin_release',{p_slug:slug,p_juz:j,p_admin:at});
@@ -141,7 +149,39 @@ async function khatma(slug,admin,at){
     $('#dm').textContent=r==='taken'?'سبقك أحدهم إلى هذا الجزء، اختر جزءًا آخر.':r==='limit'?'يمكنك حجز 3 أجزاء نشطة كحد أقصى.':'تعذّر الحجز.';
     if(r==='taken'){setTimeout(()=>{dlg.close();load()},1800)}else $('#ok').disabled=false}
    catch(e){$('#dm').textContent='تعذّر الاتصال، أعد المحاولة.';$('#ok').disabled=false}}};
- await load();timer=setInterval(()=>{if(!dlg.open)load()},5000)}
+ await load();timer=setInterval(()=>{if(!dlg.open&&$('#rd').style.display!=='flex')load()},5000)}
+const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+'pdf.worker.min.js';
+let FILES=null;
+async function mushafFiles(){try{const{data}=await db.storage.from('mushaf').list('',{limit:200});FILES=new Set((data||[]).map(f=>f.name))}catch(e){FILES=FILES||new Set()}return FILES}
+async function openReader(juz,hizb){
+ const rd=$('#rd');rd.style.display='flex';
+ const jj=String(juz).padStart(2,'0'),files=await mushafFiles();
+ const have=[1,2].filter(h=>files.has('juz'+jj+'-hizb'+h+'.pdf'));
+ const store=JSON.parse(localStorage.read||'{}'),sv=store[juz]||{};
+ hizb=hizb||(have.includes(sv.h)?sv.h:have[0]);
+ const close=()=>{rd.style.display='none';rd.innerHTML=''};
+ rd.innerHTML=`<div class="rb"><button class="btn alt" id="rc">إغلاق</button><b>الجزء ${juz}</b><div class="tabs">${have.map(h=>`<button class="tab ${h===hizb?'on':''}" data-h="${h}">${h===1?'الحزب الأول':'الحزب الثاني'}</button>`).join('')}</div></div><div class="rbody" id="rbody"></div>`;
+ $('#rc').onclick=close;
+ const box=$('#rbody');
+ if(!have.length){box.innerHTML='<p class="sub" style="padding:30px">لم تُرفع ملفات هذا الجزء بعد.</p>';return}
+ rd.querySelectorAll('.tab').forEach(b=>b.onclick=()=>openReader(juz,+b.dataset.h));
+ box.innerHTML='<p class="sub" style="padding:30px">جارٍ التحميل…</p>';
+ try{
+  const pdf=await pdfjsLib.getDocument(MUSHAF+'juz'+jj+'-hizb'+hizb+'.pdf').promise;
+  const p1=await pdf.getPage(1),v1=p1.getViewport({scale:1});
+  box.innerHTML='';const cs=[];
+  for(let n=1;n<=pdf.numPages;n++){const c=document.createElement('canvas');c.className='pg';c.dataset.n=n;c.style.aspectRatio=v1.width+'/'+v1.height;box.appendChild(c);cs.push(c)}
+  const io=new IntersectionObserver(es=>es.forEach(async e=>{const c=e.target;if(!e.isIntersecting||c.dataset.done)return;c.dataset.done=1;
+   const pg=await pdf.getPage(+c.dataset.n),v0=pg.getViewport({scale:1}),sc=Math.min(2.5,(box.clientWidth/v0.width)*(window.devicePixelRatio||1)),vp=pg.getViewport({scale:sc});
+   c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise}),{root:box,rootMargin:'800px'});
+  cs.forEach(c=>io.observe(c));
+  const startPage=(sv.h===hizb&&sv.p)?sv.p:0;
+  box.scrollTop=startPage*(cs[0].offsetHeight+8);
+  let t;box.onscroll=()=>{clearTimeout(t);t=setTimeout(()=>{const s=JSON.parse(localStorage.read||'{}');s[juz]={h:hizb,p:Math.round(box.scrollTop/(cs[0].offsetHeight+8))};localStorage.read=JSON.stringify(s)},400)};
+ }catch(e){box.innerHTML='<p class="msg" style="padding:30px">تعذّر فتح الملف. تأكد من الاتصال وأعد المحاولة.</p>'}
+}
+
 async function uploadPage(){
  clearInterval(timer);
  const OK=/^juz(0[1-9]|[12]\d|30)-hizb[12]\.pdf$/;
@@ -155,11 +195,16 @@ async function uploadPage(){
  const have=new Set((list||[]).map(f=>f.name));
  const names=[];for(let j=1;j<=30;j++)for(const h of[1,2])names.push('juz'+String(j).padStart(2,'0')+'-hizb'+h+'.pdf');
  app.innerHTML=`<h1>رفع المصحف</h1><p class="sub">تم رفع ${names.filter(n=>have.has(n)).length} من 60 ملفًا</p>
+ <div class="card"><h2>إضافة ملف واحد</h2><label for="uj">الجزء</label><select id="uj">${Array.from({length:30},(_,i)=>`<option value="${i+1}">الجزء ${i+1}</option>`).join('')}</select><label for="uh">الحزب</label><select id="uh"><option value="1">الحزب الأول</option><option value="2">الحزب الثاني</option></select><label class="btn alt" for="ufi">اختر ملف PDF وارفعه</label><input id="ufi" type="file" accept="application/pdf,.pdf" style="display:none"><p class="sub" id="us"></p></div>
  <div class="card"><label class="btn" for="fi">اختر ملف zip أو ملفات PDF</label>
  <input id="fi" type="file" multiple accept=".zip,.pdf,application/pdf,application/zip" style="display:none">
  <p class="sub" id="st">يمكنك رفع ملف zip كما هو، وسيُفك تلقائيًا. الأسماء المقبولة: juz01-hizb1.pdf إلى juz30-hizb2.pdf</p></div>
  <div class="card"><div class="chips">${names.map(n=>`<span class="chip ${have.has(n)?'ok':''}">${n.replace('.pdf','').replace('hizb','h')}${have.has(n)?' ✓':''}</span>`).join('')}</div></div>
  <button class="btn red" id="lo">تسجيل الخروج</button><a class="btn alt" href="#/">رجوع</a>`;
+ $('#ufi').onchange=async e=>{const f=e.target.files[0];if(!f)return;const us=$('#us');
+  const nm='juz'+String($('#uj').value).padStart(2,'0')+'-hizb'+$('#uh').value+'.pdf';us.textContent='جارٍ رفع '+nm+'…';
+  const{error}=await owner.storage.from('mushaf').upload(nm,f,{upsert:true,contentType:'application/pdf'});
+  if(error){us.textContent='تعذّر الرفع: '+error.message}else{await uploadPage();$('#us').textContent='تم رفع '+nm}};
  $('#lo').onclick=async()=>{await owner.auth.signOut();uploadPage()};
  $('#fi').onchange=async e=>{const st=$('#st');const items=[];let skipped=0;
   try{for(const f of e.target.files){
