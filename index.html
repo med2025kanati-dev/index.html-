@@ -52,7 +52,7 @@ select{width:100%;font:inherit;font-size:1.1rem;padding:13px;border:2px solid va
 .khead{background:linear-gradient(180deg,var(--card),var(--bg));border:1px solid var(--line);border-top:5px solid var(--pri);border-radius:22px;padding:14px;margin-bottom:12px}
 .khead h2{margin:0}.khead p{margin:2px 0}
 .st div:nth-child(1) b{color:var(--pri)}.st div:nth-child(2) b{color:var(--gold)}.st div:nth-child(3) b{color:var(--ok)}
-.t{transition:transform .1s,box-shadow .1s}.t:not(.r):not(.d):active{transform:scale(.96)}
+.t{transition:transform .1s,box-shadow .1s;min-height:112px}.t .jl{font-size:.8rem;color:var(--mut);line-height:1.2}.t b.jo{font:700 1.15rem/1.3 Amiri,serif;text-align:center}.t small.rd{font-weight:600;color:var(--ink)}.t:not(.r):not(.d):active{transform:scale(.96)}
 .t:not(.r):not(.d){background:linear-gradient(180deg,var(--card),var(--bg))}
 .authbox{max-width:440px;margin:10px auto}
 #rd{position:fixed;inset:0;background:var(--bg);z-index:50;display:none;flex-direction:column;padding-top:env(safe-area-inset-top)}
@@ -76,7 +76,7 @@ const ago=t=>{const m=Math.round((Date.now()-new Date(t))/6e4);return m<2?'ال�
 const wa=s=>'https://wa.me/?text='+encodeURIComponent('تفضلوا بالمشاركة في ختمة القرآن الكريم، احجز جزءًا واقرأه:\n'+pubUrl(s));
 const PRIV=`<details><summary>سياسة الخصوصية</summary><p class="mut">القارئ لا يحتاج حسابًا. نحفظ الاسم الذي تكتبه والجزء الذي تحجزه ومكان توقفك في القراءة، ورمزًا عشوائيًا في متصفحك لتتحكم في حجزك. تظهر الأسماء للجميع فقط إذا فعّل المنشئ ذلك، وإلا يراها المنشئ وحده وترى اسمك أنت. لا نبيع البيانات ولا نعرض إعلانات. الثواب يُهدى وفق اعتقاد كل مشارك.</p></details>`;
 let timer,me={s:null,owner:false},META={};
-let CFG={},MSGS=[];const F=(k,d=true)=>{const v=(CFG.flags||{})[k];return v===undefined?d:v};
+let CFG={},MSGS=[];const ORD=['الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن','التاسع','العاشر','الحادي عشر','الثاني عشر','الثالث عشر','الرابع عشر','الخامس عشر','السادس عشر','السابع عشر','الثامن عشر','التاسع عشر','العشرون','الحادي والعشرون','الثاني والعشرون','الثالث والعشرون','الرابع والعشرون','الخامس والعشرون','السادس والعشرون','السابع والعشرون','الثامن والعشرون','التاسع والعشرون','الثلاثون'];const JN=n=>'الجزء '+ORD[n-1];const F=(k,d=true)=>{const v=(CFG.flags||{})[k];return v===undefined?d:v};
 const trDone=new WeakMap();
 function tr(){const tx=CFG.texts;if(!tx||app.dataset.ctl||!Object.keys(tx).length)return;
  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
@@ -177,19 +177,19 @@ async function pub(slug){
   const s=calc(k),my=k.claims.filter(c=>c.mine);
   app.innerHTML=`${title(k)}${tiles(k,s)}<div class="c">${bar(s.by,s.done)}</div>
   ${s.done===30?'<div class="c ctr"><h2>تمّت الختمة، تقبّل الله من الجميع</h2></div>':''}<p class="msg ctr" id="err"></p>
-  ${MSGS.map(m=>`<div class="c" style="border-color:var(--gold);background:var(--goldbg)"><b>رسالة من منشئ الختمة</b> · الجزء ${m.juz}<p style="margin:4px 0">${esc(m.body)}</p><span class="mut">${ago(m.at)}</span></div>`).join('')}${my.length?`<div class="c"><h2>أجزائي</h2>${my.map(c=>`<div class="row" style="display:block"><b>الجزء ${c.juz}</b> <span class="tag ${c.status==='completed'?'ok':''}">${L(c.status)}</span>
+  ${MSGS.map(m=>`<div class="c" style="border-color:var(--gold);background:var(--goldbg)"><b>رسالة من منشئ الختمة</b> · ${JN(m.juz)}<p style="margin:4px 0">${esc(m.body)}</p><span class="mut">${ago(m.at)}</span></div>`).join('')}${my.length?`<div class="c"><h2>أجزائي</h2>${my.map(c=>`<div class="row" style="display:block"><b>${JN(c.juz)}</b> <span class="tag ${c.status==='completed'?'ok':''}">${L(c.status)}</span>
    ${c.page?`<p class="mut" style="margin:0">توقفت عند صفحة ${c.page} من ${c.pages}</p>`:''}
    <button class="b" data-a="read" data-j="${c.juz}">${c.page?'أكمل من حيث توقفت':'اقرأ الآن'}</button>
    ${c.status!=='completed'?`<button class="b o" data-a="completed" data-j="${c.juz}">أكملت القراءة</button><button class="b r" data-a="release" data-j="${c.juz}">إلغاء الحجز</button>`:''}</div>`).join('')}</div>`:''}
   ${F('fatiha')?'<div class="c kc"><b>سورة الفاتحة</b> <span class="tag ok">متاحة للجميع</span><p class="mut" style="margin:4px 0">يقرؤها كل من أراد في أي وقت، ولا تُحجز.</p><button class="b o" data-a="fat">اقرأ سورة الفاتحة</button></div>':''}${s.free===0&&s.done<30?'<div class="c ctr"><b>اكتمل عدد القراء</b><p class="mut" style="margin:0">جميع الأجزاء مع قراء آخرين، ولا يمكن الانضمام حاليًا. تُفتح الأجزاء إذا انسحب أحدهم.</p></div>':''}<h2>اختر جزءًا</h2><div class="g30">${[...Array(30)].map((_,i)=>{const c=s.by[i+1];
-   return `<button class="t ${c?c.status==='completed'?'d':'r':''} ${c?.mine?'me':''}" data-a="pick" data-j="${i+1}" ${c?'disabled':''}><b>${i+1}</b><small>${c?esc(c.name||L(c.status)):'متاح للقراءة'}</small></button>`}).join('')}</div>${PRIV}`;
+   return `<button class="t ${c?c.status==='completed'?'d':'r':''} ${c?.mine?'me':''}" data-a="pick" data-j="${i+1}" ${c?'disabled':''}><span class="jl">الجزء</span><b class="jo">${ORD[i]}</b>${c?`${c.name?`<small class="rd">القارئ: ${esc(c.name)}</small>`:''}<small>${L(c.status)}</small>`:'<small>متاح للقراءة</small>'}</button>`}).join('')}</div>${PRIV}`;
   app.onclick=e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,+b.dataset.j,k)}};
  const act=async(a,j,k)=>{
   if(a==='fat')return fatiha();if(a==='pick')return pick(j);
   if(a==='read'){const c=k.claims.find(x=>x.juz===j);return view(j,{slug,page:c?.page,mine:1,done:load})}
   if(a==='release'&&!confirm('إلغاء حجز هذا الجزء؟'))return;
   try{if(a==='release')await rpc('release_juz',{p_slug:slug,p_juz:j,p_token:TOK});else await rpc('set_status',{p_slug:slug,p_juz:j,p_token:TOK,p_status:a})}catch(e){}load()};
- const pickName=j=>{dlg.innerHTML=`<h2>حجز الجزء ${j}</h2><label for="pn">اسمك</label><input id="pn" type="text" maxlength="60" value="${esc(localStorage.name||me.s?.user.user_metadata?.name||'')}"><p class="msg" id="dm"></p><button class="b" id="ok">احجز الجزء ${j}</button><button class="b o" id="no">إلغاء</button>`;dlg.showModal();
+ const pickName=j=>{dlg.innerHTML=`<h2>حجز ${JN(j)}</h2><label for="pn">اسمك</label><input id="pn" type="text" maxlength="60" value="${esc(localStorage.name||me.s?.user.user_metadata?.name||'')}"><p class="msg" id="dm"></p><button class="b" id="ok">احجز ${JN(j)}</button><button class="b o" id="no">إلغاء</button>`;dlg.showModal();
   $('#no').onclick=()=>dlg.close();
   $('#ok').onclick=async()=>{const n=$('#pn').value.trim();if(!n){$('#dm').textContent='اكتب اسمك أولًا';return}
    $('#ok').disabled=true;localStorage.name=n;
@@ -211,7 +211,7 @@ async function admin(slug){
   <div class="c"><b>رابط القراءة (أرسله للمشاركين)</b><div class="lnk" style="margin-top:8px">${esc(pubUrl(slug))}</div>
   <a class="b g" target="_blank" rel="noopener" href="${wa(slug)}">إرسال عبر واتساب</a><button class="b o" data-a="cp">نسخ الرابط</button></div>
   ${tiles(k,s)}<div class="c">${bar(s.by,s.done)}</div>
-  <div class="c"><h2>المشاركون والأجزاء</h2>${k.claims.map(c=>`<div class="row"><span><b>الجزء ${c.juz}</b> · ${esc(c.name)}<br><span class="mut">${L(c.status)}${c.page?' · صفحة '+c.page+' من '+c.pages:''} · ${ago(c.at)}</span></span>
+  <div class="c"><h2>المشاركون والأجزاء</h2>${k.claims.map(c=>`<div class="row"><span><b>${JN(c.juz)}</b> · ${esc(c.name)}<br><span class="mut">${L(c.status)}${c.page?' · صفحة '+c.page+' من '+c.pages:''} · ${ago(c.at)}</span></span>
    <span>${c.status!=='completed'?`<button class="sm" data-a="msg" data-j="${c.juz}">رسالة</button> <button class="sm" data-a="adone" data-j="${c.juz}">أكمل</button> `:''}<button class="sm r" data-a="arel" data-j="${c.juz}">إلغاء</button></span></div>`).join('')||'<p class="mut">لا توجد حجوزات بعد.</p>'}</div>
   <div class="c"><h2>آخر التحديثات</h2>${(META.events||[]).map(e=>`<div class="row"><span>${esc(e.name)} ${e.kind==='claim'?'اختار':e.kind==='complete'?'أتمّ':'أعاد'} الجزء ${e.juz}</span><span class="mut">${ago(e.at)}</span></div>`).join('')||'<p class="mut">لا توجد تحديثات بعد.</p>'}</div>
   <button class="b g" data-a="remind">إرسال تذكير لكل من لم يُكمل</button>
@@ -233,11 +233,11 @@ async function admin(slug){
  await load();timer=setInterval(load,8000)}
 
 async function view(n,ctx){
- rd.style.display='flex';rd.innerHTML=`<div class="rb"><button class="sm" id="x">إغلاق</button><b>الجزء ${n}</b><button class="sm" id="zp">+</button><button class="sm" id="zm">−</button><button class="sm" id="nt">ليلي</button><span class="mut" id="pi"></span><div style="flex-basis:100%;display:flex;gap:8px"><button class="sm" id="bm" style="flex:1">حفظ موضعي</button><button class="sm" id="gb" style="flex:1">الذهاب لموضعي</button></div></div><div class="rbody" id="bd"><p class="ctr mut">جارٍ التحميل…</p></div>`;
+ rd.style.display='flex';rd.innerHTML=`<div class="rb"><button class="sm" id="x">إغلاق</button><b>${JN(n)}</b><button class="sm" id="zp">+</button><button class="sm" id="zm">−</button><button class="sm" id="nt">ليلي</button><span class="mut" id="pi"></span><div style="flex-basis:100%;display:flex;gap:8px"><button class="sm" id="bm" style="flex:1">حفظ موضعي</button><button class="sm" id="gb" style="flex:1">الذهاب لموضعي</button></div></div><div class="rbody" id="bd"><p class="ctr mut">جارٍ التحميل…</p></div>`;
  const close=()=>{rd.style.display='none';rd.innerHTML='';ctx.done&&ctx.done()};$('#x').onclick=close;const bd=$('#bd');
  const nextPanel=async()=>{bd.innerHTML='<p class="ctr mut" style="padding:30px">جارٍ التحديث…</p>';let nx=null;
   try{const k=await rpc('get_khatma',{p_slug:ctx.slug,p_token:TOK}),tk=new Set(k.claims.map(c=>c.juz));for(let i=1;i<30;i++){const j=(n+i-1)%30+1;if(!tk.has(j)){nx=j;break}}}catch(e){}
-  bd.innerHTML=`<div class="c ctr" style="margin:20px"><h2>تقبّل الله منك، أتممت الجزء ${n}</h2>${nx?`<p>${nx===n%30+1?'الجزء التالي':'أقرب جزء'} متاح للقراءة: الجزء ${nx}</p><button class="b" id="nx">اقرأ الجزء ${nx} الآن</button>`:'<p>لا توجد أجزاء أخرى متاحة للقراءة حاليًا.</p>'}<button class="b o" id="cl">إغلاق</button></div>`;
+  bd.innerHTML=`<div class="c ctr" style="margin:20px"><h2>تقبّل الله منك، أتممت ${JN(n)}</h2>${nx?`<p>${nx===n%30+1?'الجزء التالي':'أقرب جزء'} متاح للقراءة: ${JN(nx)}</p><button class="b" id="nx">اقرأ ${JN(nx)} الآن</button>`:'<p>لا توجد أجزاء أخرى متاحة للقراءة حاليًا.</p>'}<button class="b o" id="cl">إغلاق</button></div>`;
   $('#cl').onclick=close;
   if(nx)$('#nx').onclick=async()=>{try{const r=await rpc('claim_juz',{p_slug:ctx.slug,p_juz:nx,p_name:localStorage.name||'قارئ',p_token:TOK});if(r==='ok')view(nx,{slug:ctx.slug,mine:1,done:ctx.done});else{alert(r==='limit'?'وصلت إلى الحد الأقصى للأجزاء الجارية':'سبقك أحدهم إلى هذا الجزء');close()}}catch(e){close()}}};
  if(!(await files()).has('juz'+N(n)+'.pdf')){bd.innerHTML='<p class="ctr" style="padding:30px">لم يُرفع هذا الجزء بعد، سيُضاف قريبًا.</p>';return}
